@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             PassportSeeder::class,
             UserSeeder::class,
             IncidenceSeeder::class,
+            CommentSeeder::class,
         ]);
     }
 }
