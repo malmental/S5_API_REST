@@ -20,5 +20,12 @@ class UserSeeder extends Seeder
             'email' => 'malmental@telsur.cl',
             'password' => bcrypt('password'),
         ]);
+
+        User::create([
+        'name' => 'Dungeon Goblin',
+        'email' => 'dungeongoblin@telsur.cl',
+        'password' => bcrypt('password'),
+        'is_admin' => true,
+    ]);
     }
 }

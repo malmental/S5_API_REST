@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CommentController;
 use App\Http\Controllers\Api\V1\IncidenceController;
 use App\Http\Controllers\Api\V1\TagController;
+use App\Http\Controllers\Api\V1\MetricController;
+use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -39,4 +41,15 @@ Route::prefix('v1')->group(function () {
     Route::get('/tags/{id}', [TagController::class, 'show']);
     Route::put('/tags/{id}', [TagController::class, 'update'])->middleware('auth:api');
     Route::delete('/tags/{id}', [TagController::class, 'destroy'])->middleware('auth:api');
+
+    // Metrics
+    Route::get('/metrics', [MetricController::class, 'index'])->middleware('auth:api');
+
+    // Users Admin
+    Route::middleware(['auth:api', 'is_admin'])->group(function () {
+        Route::get('/users', [UserController::class, 'index']);
+        Route::get('/users/{id}', [UserController::class, 'show']);
+        Route::get('/users/{id}/incidences', [UserController::class, 'incidences']);
+        Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    });
 });
