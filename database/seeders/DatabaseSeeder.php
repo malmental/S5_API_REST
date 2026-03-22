@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             IncidenceSeeder::class,
             CommentSeeder::class,
+            // TagSeeder::class,
         ]);
     }
 }

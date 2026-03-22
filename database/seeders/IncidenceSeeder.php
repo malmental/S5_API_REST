@@ -11,12 +11,20 @@ class IncidenceSeeder extends Seeder
     public function run(): void
     {
         $tags = [
-            'bug', 'feature', 'urgent', 'database', 'frontend',
-            'backend', 'security', 'performance', 'ui', 'ux',
+            ['name' => 'bug', 'user_id' => 1],
+            ['name' => 'feature', 'user_id' => 1],
+            ['name' => 'urgent', 'user_id' => 2],
+            ['name' => 'database', 'user_id' => 2],
+            ['name' => 'frontend', 'user_id' => 1],
+            ['name' => 'backend', 'user_id' => 2],
+            ['name' => 'security', 'user_id' => 1],
+            ['name' => 'performance', 'user_id' => 2],
+            ['name' => 'ui', 'user_id' => 1],
+            ['name' => 'ux', 'user_id' => 2],
         ];
 
-        foreach ($tags as $tagName) {
-            Tag::create(['name' => $tagName]);
+        foreach ($tags as $tagData) {
+            Tag::firstOrCreate(['name' => $tagData['name']], $tagData);
         }
 
         $incidences = [
