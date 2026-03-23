@@ -10,7 +10,7 @@ class IsAdmin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! auth()->user() || ! auth()->user()->isAdmin()) {
+        if (!auth()->user() || !auth()->user()->isAdmin()) {
             return response()->json([
                 'message' => 'Forbidden. Admin access required.',
             ], 403);
