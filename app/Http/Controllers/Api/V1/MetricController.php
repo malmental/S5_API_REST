@@ -43,12 +43,15 @@ class MetricController extends Controller
     public function index(Request $request): JsonResponse
     {
         $perPage = min($request->per_page ?? 20, 100);
-        
+
         $incidences = Incidence::with(['user', 'tags'])
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
+
         $byStatus = $incidences->groupBy('status');
+
         $byPriority = $incidences->groupBy('priority');
+
         return response()->json([
             'data' => [
                 'by_status' => [
