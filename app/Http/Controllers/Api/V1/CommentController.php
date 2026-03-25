@@ -102,6 +102,17 @@ class CommentController extends Controller
      */
     public function store(StoreCommentRequest $request, int $incidenceId): JsonResponse
     {
+        // Validate parent_id if provided
+        if ($request->parent_id) {
+            $parentComment = Comment::where('id', $request->parent_id)
+                ->where('incidence_id', $incidenceId)
+                ->first();
+
+            if (!$parentComment) {
+                return response()->json(['message' => 'Invalid parent_id. Must belong to the same incidence.'], 422);
+            }
+        }
+
         $comment = Comment::create([
             'body' => $request->body,
             'user_id' => auth()->id(),

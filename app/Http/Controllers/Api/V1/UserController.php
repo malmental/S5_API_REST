@@ -22,16 +22,16 @@ class UserController extends Controller
      *   "data": [
      *     {
      *       "id": 1,
-     *       "name": "Salem",
-     *       "email": "salem@telsur.cl",
+     *       "name": "User Admin",
+     *       "email": "admin@telsur.cl",
      *       "is_admin": true,
      *       "created_at": "2026-01-01T00:00:00Z",
      *       "updated_at": "2026-01-01T00:00:00Z"
      *     },
      *     {
      *       "id": 2,
-     *       "name": "Malo Mentalo",
-     *       "email": "malmental@telsur.cl",
+     *       "name": "User no Admin",
+     *       "email": "noadmin@telsur.cl",
      *       "is_admin": false,
      *       ...
      *     }
@@ -63,8 +63,8 @@ class UserController extends Controller
      * @response 200 scenario="User retrieved" {
      *   "data": {
      *     "id": 1,
-     *     "name": "Salem",
-     *     "email": "salem@telsur.cl",
+     *     "name": "User Admin",
+     *     "email": "admin@telsur.cl",
      *     "is_admin": true,
      *     "created_at": "2026-01-01T00:00:00Z",
      *     "updated_at": "2026-01-01T00:00:00Z"
