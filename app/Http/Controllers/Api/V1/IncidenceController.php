@@ -49,18 +49,22 @@ class IncidenceController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = Incidence::with(['user', 'assignedUser', 'tags']);
+
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
+
         if ($request->has('priority')) {
             $query->where('priority', $request->priority);
         }
+
         if ($request->has('tags')) {
             $tagIds = explode(',', $request->tags);
             $query->whereHas('tags', function ($q) use ($tagIds) {
                 $q->whereIn('tags.id', $tagIds);
             });
         }
+
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -69,10 +73,18 @@ class IncidenceController extends Controller
             });
         }
 
-        $incidences = $query->get();
+        $perPage = min($request->per_page ?? 15, 100);
+
+        $incidences = $query->orderBy('created_at', 'desc')->paginate($perPage);
 
         return response()->json([
-            'data' => $incidences,
+            'data' => $incidences->items(),
+            'meta' => [
+                'current_page' => $incidences->currentPage(),
+                'last_page' => $incidences->lastPage(),
+                'per_page' => $incidences->perPage(),
+                'total' => $incidences->total(),
+            ],
         ]);
     }
 
@@ -134,6 +146,7 @@ class IncidenceController extends Controller
         if ($request->tags) {
             $this->syncTags($incidence, $request->tags);
         }
+
         $incidence->load(['user', 'assignedUser', 'tags']);
 
         return response()->json([
@@ -269,6 +282,7 @@ class IncidenceController extends Controller
     private function syncTags(Incidence $incidence, string $tagsString): void
     {
         $tagNames = array_filter(array_map('trim', explode(',', $tagsString)));
+        $tagNames = array_slice($tagNames, 0, 10);
         $tagIds = [];
 
         foreach ($tagNames as $name) {

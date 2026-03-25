@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Incidence;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * @group Metrics
@@ -39,13 +40,15 @@ class MetricController extends Controller
      *   "message": "Unauthenticated."
      * }
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $incidences = Incidence::with(['user', 'tags'])->get();
-
+        $perPage = min($request->per_page ?? 20, 100);
+        
+        $incidences = Incidence::with(['user', 'tags'])
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
         $byStatus = $incidences->groupBy('status');
         $byPriority = $incidences->groupBy('priority');
-
         return response()->json([
             'data' => [
                 'by_status' => [

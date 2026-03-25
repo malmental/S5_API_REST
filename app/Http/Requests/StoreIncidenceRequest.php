@@ -19,7 +19,7 @@ class StoreIncidenceRequest extends FormRequest
             'status' => ['nullable', 'in:open,in_progress,resolved,closed'],
             'priority' => ['nullable', 'in:low,medium,high,critical'],
             'assigned_to' => ['nullable', 'exists:users,id'],
-            'tags' => ['nullable', 'string'],
+            'tags' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
