@@ -11,8 +11,41 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
+/**
+ * @group Incidences
+ * Endpoints for managing incidences, including listing, creating, viewing, updating, and deleting incidences.
+ */
 class IncidenceController extends Controller
 {
+    /**
+     * List all incidences.
+     * Retrieve all incidences with optional filters.
+     * 
+     * @unauthenticated
+     * @queryParam status string Filter by status (open, in_progress, closed).
+     * @queryParam priority string Filter by priority (low, medium, high).
+     * @queryParam tags string Filter by comma-separated list of tag IDs. Example: 1, 2, 3
+     * @queryParam search string Search by title or description. Examplo: server
+     * 
+     * @response 200 scenario="Incidences retrieved" {
+     *   "data": [
+     *     {
+     *       "id": 1,
+     *       "title": "Server Down",
+     *       "description": "Main server not responding",
+     *       "status": "open",
+     *       "priority": "critical",
+     *       "user_id": 1,
+     *       "assigned_to": 2,
+     *       "created_at": "2026-01-01T00:00:00Z",
+     *       "updated_at": "2026-01-01T00:00:00Z",
+     *       "user": {...},
+     *       "assigned_user": {...},
+     *       "tags": [...]
+     *     }
+     *   ]
+     * }
+     */
     public function index(Request $request): JsonResponse
     {
         $query = Incidence::with(['user', 'assignedUser', 'tags']);
@@ -43,6 +76,50 @@ class IncidenceController extends Controller
         ]);
     }
 
+    /**
+     * Create a new incidence.
+     * Create a new incidence with the provided details.
+     * The authenticated user will be set as the creator of the incidence (user_id).
+     * 
+     * @authenticated
+     * @bodyParam title string required The title of the incidence. Example: "Server Down"
+     * @bodyParam description string required A detailed description of the incidence. Example: "The main server is not responding since 3 PM."
+     * @bodyParam status string with the status of the incidence. Allowed values: open, in_progress, closed. Default is "open".
+     * @bodyParam priority string with the priority level of the incidence. Allowed values: low, medium, high. Default is "medium".
+     * @bodyParam assigned_to integer ID of the user assigned to handle this incidence. Example: 2
+     * @bodyParam tags string A comma-separated list of tags to associate with the incidence. Example: "server, urgent, backend"
+     * 
+     * @response 201 scenario="Incidence created" {
+     *   "data": [
+     *     {
+     *       "id": 1,
+     *       "title": "Server Down",
+     *       "description": "Main server not responding",
+     *       "status": "open",
+     *       "priority": "critical",
+     *       "user_id": 1,
+     *       "assigned_to": 2,
+     *       "created_at": "2026-01-01T00:00:00Z",
+     *       "updated_at": "2026-01-01T00:00:00Z",
+     *       "user": {...},
+     *       "assigned_user": {...},
+     *       "tags": [...]
+     *     }
+     *   ]
+     * }
+     * @response 401 scenario="Unauthenticated" {
+     *  "message": "Unauthenticated."
+     * }
+     * @response 422 scenario="Validation error" [
+     *  {
+     *   "message": "The given data was invalid.",
+     *   "errors": {
+     *     "title": ["The title field is required."],
+     *     "description": ["The description field is required."]
+     *   }
+     *  }
+     * ]
+     */
     public function store(StoreIncidenceRequest $request): JsonResponse
     {
         $incidence = Incidence::create([
@@ -64,6 +141,29 @@ class IncidenceController extends Controller
         ], 201);
     }
 
+    /**
+     * View a single incidence
+     * Get detailed information about a specific incidence by its ID. 
+     * 
+     * @unauthenticated
+     * @urlParam id integer required The ID of the incidence. Example: 1
+     * 
+     * @response 200 scenario="Incidence retrieved" {
+     *   "data": [
+     *     {
+     *       "id": 1,
+     *       "title": "Server Down",
+     *       "description": "Main server not responding",
+     *       "status": "open",
+     *       "priority": "critical",
+     *       "user_id": 1,
+     *       "assigned_to": 2,
+     *       "created_at": "2026-01-01T00:00:00Z",
+     *       "updated_at": "2026-01-01T00:00:00Z"
+     *     }
+     *   ]
+     * }
+     */
     public function show(int $id): JsonResponse
     {
         $incidence = Incidence::with(['user', 'assignedUser', 'tags'])->findOrFail($id);
@@ -72,6 +172,46 @@ class IncidenceController extends Controller
             'data' => $incidence,
         ]);
     }
+
+    /**
+     * Update an incidence
+     * Update an existing incidence by its ID.
+     * Only the creator of the incidence or an admin can update it.
+     * 
+     * @authenticated
+     * @urlParam id integer required The ID of the incidence to update. Example: 1
+     * @bodyParam title string The title of the incidence. Example: "Server Down - Updated"
+     * @bodyParam description string The description of the incidence. Example: "Main server not responding - Updated"
+     * @bodyParam status string The status of the incidence. Example: "in_progress"
+     * @bodyParam priority string The priority of the incidence. Example: "high"
+     * @bodyParam assigned_to integer The ID of the user assigned to handle this incidence. Example: 2
+     * @bodyParam tags string A comma-separated list of tags to associate with the incidence. Example: "server, urgent, backend"
+     * 
+     * @response 200 scenario="Incidence updated" {
+     *  "data": [
+     *      {
+     *        "id": 1,
+     *        "title": "Server Down - Updated",
+     *        "description": "Main server not responding - Updated",
+     *        "status": "in_progress",
+     *        "priority": "high",
+     *        "user_id": 1,
+     *        "assigned_to": 2,
+     *        "created_at": "2026-01-01T00:00:00Z",
+     *        "updated_at": "2026-01-01T01:00:00Z"
+     *      }
+     *  ]
+     * }
+     * @response 401 scenario="Unauthenticated" {
+     *  "message": "Unauthenticated."
+     * }
+     * @response 403 scenario="Unauthorized" {
+     *  "message": "Unauthorized"
+     * }
+     * @response 400 scenario="Invalid request data" {
+     *  "message": "Invalid request data. No query results for model [App\\Models\\Incidence]."
+     * }
+     */
     public function update(UpdateIncidenceRequest $request, int $id): JsonResponse
     {
         $incidence = Incidence::findOrFail($id);
@@ -93,6 +233,24 @@ class IncidenceController extends Controller
         ]);
     }
 
+    /**
+     * Delete an incidence
+     * Delete an existing incidence by its ID.
+     * Only the creator of the incidence or an admin can delete it.
+     * 
+     * @authenticated
+     * @urlParam id integer required The ID of the incidence to delete. Example: 1
+     * 
+     * @response 200 scenario="Incidence deleted" {
+     *  "message": "Incidence deleted successfully"
+     * }
+     * @response 401 scenario="Unauthenticated" {
+     *  "message": "Unauthenticated."
+     * }
+     * @response 403 scenario="Unauthorized" {
+     *  "message": "Unauthorized"
+     * }
+     */
     public function destroy(int $id): JsonResponse
     {
         $incidence = Incidence::findOrFail($id);

@@ -1,0 +1,356 @@
+name: Users
+description: "Endpoints for managing users, including listing all users, viewing a single user, retrieving a user's incidences, and deleting a user."
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/users
+    metadata:
+      custom: []
+      groupName: Users
+      groupDescription: "Endpoints for managing users, including listing all users, viewing a single user, retrieving a user's incidences, and deleting a user."
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List all users.'
+      description: 'Retrieve a list of all users.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": [
+              {
+                "id": 1,
+                "name": "Salem",
+                "email": "salem@telsur.cl",
+                "is_admin": true,
+                "created_at": "2026-01-01T00:00:00Z",
+                "updated_at": "2026-01-01T00:00:00Z"
+              },
+              {
+                "id": 2,
+                "name": "Malo Mentalo",
+                "email": "malmental@telsur.cl",
+                "is_admin": false,
+                ...
+              }
+            ]
+          }
+        headers: []
+        description: 'Users retrieved'
+      -
+        custom: []
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: Unauthorized
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "message": "Forbidden. Admin access required."
+          }
+        headers: []
+        description: Forbidden
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/users/{id}'
+    metadata:
+      custom: []
+      groupName: Users
+      groupDescription: "Endpoints for managing users, including listing all users, viewing a single user, retrieving a user's incidences, and deleting a user."
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'View a single user.'
+      description: 'Get detailed information about a specific user by their ID.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the user.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": {
+              "id": 1,
+              "name": "Salem",
+              "email": "salem@telsur.cl",
+              "is_admin": true,
+              "created_at": "2026-01-01T00:00:00Z",
+              "updated_at": "2026-01-01T00:00:00Z"
+            }
+          }
+        headers: []
+        description: 'User retrieved'
+      -
+        custom: []
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: Unauthorized
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "message": "Forbidden. Admin access required."
+          }
+        headers: []
+        description: Forbidden
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "message": "User not found."
+          }
+        headers: []
+        description: 'User not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/users/{id}/incidences'
+    metadata:
+      custom: []
+      groupName: Users
+      groupDescription: "Endpoints for managing users, including listing all users, viewing a single user, retrieving a user's incidences, and deleting a user."
+      subgroup: ''
+      subgroupDescription: ''
+      title: "Get user's incidences."
+      description: |-
+        Retrieve all incidences created by or assigned to a specific user by their ID.
+        - The creartor of the incidence is determined by the `user_id` field.
+        - The assigned user is determined by the `assigned_to` field.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the user.'
+        required: true
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 2
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": [
+              {
+                "id": 1,
+                "title": "Server Down",
+                "user_id": 2,
+                "assigned_to": 2,
+                ...
+              },
+              {
+                "id": 3,
+                "title": "Database issue",
+                "user_id": 1,
+                "assigned_to": 2,
+                ...
+              }
+            ]
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: Unauthorized
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "message": "Forbidden. Admin access required."
+          }
+        headers: []
+        description: Forbidden
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "message": "No query results for model [App\\Models\\User]."
+          }
+        headers: []
+        description: 'User not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/v1/users/{id}'
+    metadata:
+      custom: []
+      groupName: Users
+      groupDescription: "Endpoints for managing users, including listing all users, viewing a single user, retrieving a user's incidences, and deleting a user."
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Delete a user.'
+      description: |-
+        Remove a specific user from the system.
+        Only an admin can delete a user, and users cannot delete themselves.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the user.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "message": "User deleted successfully."
+          }
+        headers: []
+        description: 'User deleted'
+      -
+        custom: []
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: Unauthorized
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "message": "Forbidden. Admin access required."
+          }
+        headers: []
+        description: Forbidden
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "message": "User not found."}
+        headers: []
+        description: 'User not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
