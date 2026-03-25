@@ -8,8 +8,31 @@ use App\Http\Requests\UpdateTagRequest;
 use App\Models\Tag;
 use Illuminate\Http\JsonResponse;
 
+/**
+ * @group Tags
+ * Endpoints for managing tags, including listing, creating, viewing, updating, and deleting tags.
+ */
 class TagController extends Controller
 {
+    /**
+     * List all tags.
+     * Retrieve all tags with their associated users and incidences.
+     * 
+     * @unauthenticated
+     * @response 200 scenario="Tags retrieved" {
+     *   "data": [
+     *     {
+     *       "id": 1,
+     *       "name": "tag1",
+     *       "user_id": 1,
+     *       "created_at": "2026-01-01T00:00:00Z",
+     *       "updated_at": "2026-01-01T00:00:00Z",
+     *       "user": {...},
+     *       "incidences": [...]
+     *     }
+     *   ]
+     * }
+     */
     public function index(): JsonResponse
     {
         $tags = Tag::with(['user', 'incidences'])->get();
@@ -19,6 +42,36 @@ class TagController extends Controller
         ]);
     }
 
+    /**
+     * Create a new tag.
+     * Create a new tag or reuse an existing one with the same name (case-insensitive).
+     * Uses firstOrCreate to ensure atomicity and prevent duplicates.
+     * Tag names are stored in lowercase to enforce case-insensitivity.
+     * 
+     * @authenticated
+     * @bodyParam name string required The name of the tag (stored in lowercase). Example: Server
+     * 
+     * @response 201 scenario="Tag created" {
+     *   "data": {
+     *     "id": 1,
+     *     "name": "server",
+     *     "user_id": 1,
+     *     "created_at": "2026-01-01T00:00:00Z",
+     *     "updated_at": "2026-01-01T00:00:00Z",
+     *     "user": {...},
+     *     "incidences": [...]
+     *   }
+     * }
+     * @response 401 scenario="Unauthorized" {
+     *   "message": "Unauthenticated."
+     * }
+     * @response 422 scenario="Validation error" {
+     *   "message": "The given data was invalid.",
+     *   "errors": {
+     *     "name": ["The name field is required."]
+     *   }
+     * }
+     */
     public function store(StoreTagRequest $request): JsonResponse
     {
         $tag = Tag::firstOrCreate(
@@ -31,6 +84,25 @@ class TagController extends Controller
         ], 201);
     }
 
+    /**
+     * View a single tag.
+     * Get detailed information about a specific tag by its ID, including the user who created it and the incidences associated with it.
+     * 
+     * @unauthenticated
+     * @urlParam id integer required The ID of the tag. Example: 1
+     * 
+     * @response 200 scenario="Tag retrieved" {
+     *   "data": {
+     *     "id": 1,
+     *     "name": "server",
+     *     "user_id": 1,
+     *     "created_at": "2026-01-01T00:00:00Z",
+     *     "updated_at": "2026-01-01T00:00:00Z",
+     *     "user": {...},
+     *     "incidences": [...]
+     *   }
+     * }
+     */
     public function show(int $id): JsonResponse
     {
         $tag = Tag::with(['user', 'incidences'])->findOrFail($id);
@@ -40,6 +112,36 @@ class TagController extends Controller
         ]);
     }
 
+    /**
+     * Update a tag.
+     * Update the details of an existing tag.
+     * Only the creator of the tag or an admin can update it.
+     * 
+     * @authenticated
+     * @urlParam id integer required The ID of the tag. Example: 1
+     * @bodyParam name string required The name of the tag (stored in lowercase). Example: Server
+     * 
+     * @response 200 scenario="Tag updated" {
+     *   "data": {
+     *     "id": 1,
+     *     "name": "server",
+     *     "user_id": 1,
+     *     "created_at": "2026-01-01T00:00:00Z",
+     *     "updated_at": "2026-01-01T00:00:00Z",
+     *     "user": {...},
+     *     "incidences": [...]
+     *   }
+     * }
+     * @response 401 scenario="Unauthorized" {
+     *   "message": "Unauthenticated."
+     * }
+     * @response 403 scenario="Forbidden" {
+     *   "message": "Unauthorized"
+     * }
+     * @response 404 scenario="Not found" {
+     *   "message": "No query results for model [App\\Models\\Tag]"
+     * }
+     */
     public function update(UpdateTagRequest $request, int $id): JsonResponse
     {
         $tag = Tag::findOrFail($id);
@@ -59,6 +161,28 @@ class TagController extends Controller
         ]);
     }
 
+    /**
+     * Delete a tag.
+     * Delete an existing tag.
+     * Only the creator of the tag or an admin can delete it.
+     * Note: This removes the tag from all associated incidences (pivot table).
+     * 
+     * @authenticated
+     * @urlParam id integer required The ID of the tag. Example: 1
+     * 
+     * @response 200 scenario="Tag deleted" {
+     *   "message": "Tag deleted successfully"
+     * }
+     * @response 401 scenario="Unauthorized" {
+     *   "message": "Unauthenticated."
+     * }
+     * @response 403 scenario="Forbidden" {
+     *   "message": "Unauthorized"
+     * }
+     * @response 404 scenario="Not found" {
+     *   "message": "No query results for model [App\\Models\\Tag]"
+     * }
+     */
     public function destroy(int $id): JsonResponse
     {
         $tag = Tag::findOrFail($id);
