@@ -171,10 +171,10 @@ endpoints:
       groupDescription: 'Endpoints for managing incidences, including listing, creating, viewing, updating, and deleting incidences.'
       subgroup: ''
       subgroupDescription: ''
-      title: |-
-        Update an incidence
+      title: 'Update an incidence.'
+      description: |-
         Update an existing incidence by its ID.
-      description: 'Only the creator of the incidence or an admin can update it.'
+        Only the creator of the incidence or an admin can update it.
       authenticated: true
       deprecated: false
     headers:
@@ -340,10 +340,10 @@ endpoints:
       groupDescription: 'Endpoints for managing incidences, including listing, creating, viewing, updating, and deleting incidences.'
       subgroup: ''
       subgroupDescription: ''
-      title: |-
-        Delete an incidence
+      title: 'Delete an incidence.'
+      description: |-
         Delete an existing incidence by its ID.
-      description: 'Only the creator of the incidence or an admin can delete it.'
+        Only the creator of the incidence or an admin can delete it.
       authenticated: true
       deprecated: false
     headers:
@@ -519,10 +519,8 @@ endpoints:
       groupDescription: 'Endpoints for managing incidences, including listing, creating, viewing, updating, and deleting incidences.'
       subgroup: ''
       subgroupDescription: ''
-      title: |-
-        View a single incidence
-        Get detailed information about a specific incidence by its ID.
-      description: ''
+      title: 'View a single incidence.'
+      description: 'Get detailed information about a specific incidence by its ID.'
       authenticated: false
       deprecated: false
     headers:

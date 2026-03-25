@@ -36,16 +36,16 @@ endpoints:
             "data": [
               {
                 "id": 1,
-                "name": "Salem",
-                "email": "salem@telsur.cl",
+                "name": "User Admin",
+                "email": "admin@telsur.cl",
                 "is_admin": true,
                 "created_at": "2026-01-01T00:00:00Z",
                 "updated_at": "2026-01-01T00:00:00Z"
               },
               {
                 "id": 2,
-                "name": "Malo Mentalo",
-                "email": "malmental@telsur.cl",
+                "name": "User no Admin",
+                "email": "noadmin@telsur.cl",
                 "is_admin": false,
                 ...
               }
@@ -125,8 +125,8 @@ endpoints:
           {
             "data": {
               "id": 1,
-              "name": "Salem",
-              "email": "salem@telsur.cl",
+              "name": "User Admin",
+              "email": "admin@telsur.cl",
               "is_admin": true,
               "created_at": "2026-01-01T00:00:00Z",
               "updated_at": "2026-01-01T00:00:00Z"
