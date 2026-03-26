@@ -71,6 +71,9 @@ class AuthController extends Controller
      * @bodyParam email string required User's email address.
      * @bodyParam password string required User's password.
      * 
+     * @response 200 scenario="Login successful" {
+     *   "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+     * }
      * @response 401 scenario="Invalid credentials" {
      *   "message": "Invalid credentials"
      * }
