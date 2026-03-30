@@ -20,13 +20,13 @@ Route::prefix('v1')->group(function () {
 
         // Incidences (protected)
         Route::post('/incidences', [IncidenceController::class, 'store']);
-        Route::put('/incidences/{id}', [IncidenceController::class, 'update']);
-        Route::delete('/incidences/{id}', [IncidenceController::class, 'destroy']);
+        Route::put('/incidences/{incidence}', [IncidenceController::class, 'update']);
+        Route::delete('/incidences/{incidence}', [IncidenceController::class, 'destroy']);
     });
 
     // Incidences (public)
     Route::get('/incidences', [IncidenceController::class, 'index']);
-    Route::get('/incidences/{id}', [IncidenceController::class, 'show']);
+    Route::get('/incidences/{incidence}', [IncidenceController::class, 'show']);
 
     // Comments
     Route::get('/incidences/{incidenceId}/comments', [CommentController::class, 'index']);
