@@ -225,22 +225,22 @@ class IncidenceController extends Controller
      *  "message": "Invalid request data. No query results for model [App\\Models\\Incidence]."
      * }
      */
-    public function update(UpdateIncidenceRequest $request, int $id): JsonResponse
+    public function update(UpdateIncidenceRequest $request, Incidence $incidence): JsonResponse
     {
-        $incidence = Incidence::findOrFail($id);
-        
         $user = auth()->user();
 
         if (!$user->isAdmin() && $incidence->user_id !== $user->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
+
         $incidence->update($request->except('tags'));
 
         if ($request->has('tags')) {
             $this->syncTags($incidence, $request->tags);
         }
+    
         $incidence->load(['user', 'assignedUser', 'tags']);
-
+    
         return response()->json([
             'data' => $incidence,
         ]);
@@ -264,14 +264,14 @@ class IncidenceController extends Controller
      *  "message": "Unauthorized"
      * }
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(Incidence $incidence): JsonResponse
     {
-        $incidence = Incidence::findOrFail($id);
         $user = auth()->user();
 
         if (!$user->isAdmin() && $incidence->user_id !== $user->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
+
         $incidence->delete();
 
         return response()->json([
