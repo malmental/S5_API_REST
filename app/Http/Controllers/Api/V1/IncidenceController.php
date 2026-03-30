@@ -178,12 +178,12 @@ class IncidenceController extends Controller
      *   ]
      * }
      */
-    public function show(int $id): JsonResponse
+    public function show(Incidence $incidence): JsonResponse
     {
-        $incidence = Incidence::with(['user', 'assignedUser', 'tags'])->findOrFail($id);
+        $incidence->load(['user', 'assignedUser', 'tags']);
 
         return response()->json([
-            'data' => $incidence,
+            'data' => new IncidenceResource($incidence),
         ]);
     }
 
@@ -226,10 +226,8 @@ class IncidenceController extends Controller
      *  "message": "Invalid request data. No query results for model [App\\Models\\Incidence]."
      * }
      */
-    public function update(UpdateIncidenceRequest $request, int $id): JsonResponse
+    public function update(UpdateIncidenceRequest $request, Incidence $incidence): JsonResponse
     {
-        $incidence = Incidence::findOrFail($id);
-        
         $user = auth()->user();
 
         if (!$user->isAdmin() && $incidence->user_id !== $user->id) {
@@ -265,9 +263,8 @@ class IncidenceController extends Controller
      *  "message": "Unauthorized"
      * }
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(Incidence $incidence): JsonResponse
     {
-        $incidence = Incidence::findOrFail($id);
         $user = auth()->user();
 
         if (!$user->isAdmin() && $incidence->user_id !== $user->id) {
