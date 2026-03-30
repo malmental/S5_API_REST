@@ -55,7 +55,7 @@ class IncidenceSeeder extends Seeder
 
         for ($i = 1; $i <= 20; $i++) {
             $title = $titles[array_rand($titles)] . ' #' . $i;
-            $description = 'Descripción de prueba para la incidencia #' . $i . '. Este es un texto aleatorio para填充 la base de datos.';
+            $description = 'Descripción de prueba para la incidencia #' . $i . '. Este es un texto aleatorio para la base de datos.';
             
             Incidence::create([
                 'title' => $title,

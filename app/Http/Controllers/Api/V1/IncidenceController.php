@@ -155,7 +155,7 @@ class IncidenceController extends Controller
     }
 
     /**
-     * View a single incidence
+     * View a single incidence.
      * Get detailed information about a specific incidence by its ID. 
      * 
      * @unauthenticated
@@ -187,7 +187,7 @@ class IncidenceController extends Controller
     }
 
     /**
-     * Update an incidence
+     * Update an incidence.
      * Update an existing incidence by its ID.
      * Only the creator of the incidence or an admin can update it.
      * 
@@ -247,7 +247,7 @@ class IncidenceController extends Controller
     }
 
     /**
-     * Delete an incidence
+     * Delete an incidence.
      * Delete an existing incidence by its ID.
      * Only the creator of the incidence or an admin can delete it.
      * 
