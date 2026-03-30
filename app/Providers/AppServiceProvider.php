@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Incidence;
+use App\Policies\IncidencePolicy;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
