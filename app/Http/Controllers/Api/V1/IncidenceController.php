@@ -233,13 +233,15 @@ class IncidenceController extends Controller
         if (!$user->isAdmin() && $incidence->user_id !== $user->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
+
         $incidence->update($request->except('tags'));
 
         if ($request->has('tags')) {
             $this->syncTags($incidence, $request->tags);
         }
+    
         $incidence->load(['user', 'assignedUser', 'tags']);
-
+    
         return response()->json([
             'data' => $incidence,
         ]);
@@ -270,6 +272,7 @@ class IncidenceController extends Controller
         if (!$user->isAdmin() && $incidence->user_id !== $user->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
+
         $incidence->delete();
 
         return response()->json([
