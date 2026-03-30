@@ -163,4 +163,18 @@ class IncidenceTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    public function test_incidence_resource_structure(): void
+    {
+        $incidence = Incidence::factory()->create();
+        $resource = new \App\Http\Resources\IncidenceResource($incidence);
+        $data = $resource->toArray(new \Illuminate\Http\Request);
+    
+        $this->assertArrayHasKey('id', $data);
+        $this->assertArrayHasKey('title', $data);
+        $this->assertArrayHasKey('status', $data);
+        $this->assertArrayHasKey('priority', $data);
+        $this->assertArrayHasKey('created_at', $data);
+        $this->assertArrayHasKey('updated_at', $data);
+    }
 }

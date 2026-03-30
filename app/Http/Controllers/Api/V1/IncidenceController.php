@@ -7,6 +7,7 @@ use App\Http\Requests\StoreIncidenceRequest;
 use App\Http\Requests\UpdateIncidenceRequest;
 use App\Models\Incidence;
 use App\Models\Tag;
+use App\Http\Resources\IncidenceResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -78,7 +79,7 @@ class IncidenceController extends Controller
         $incidences = $query->orderBy('created_at', 'desc')->paginate($perPage);
 
         return response()->json([
-            'data' => $incidences->items(),
+            'data' => IncidenceResource::collection($incidences),
             'meta' => [
                 'current_page' => $incidences->currentPage(),
                 'last_page' => $incidences->lastPage(),
