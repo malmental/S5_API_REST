@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTagRequest;
 use App\Http\Requests\UpdateTagRequest;
+use App\Http\Resources\TagResource;
+use App\Http\Resources\UserResource;
+use App\Http\Resources\IncidenceResource;
 use App\Models\Tag;
 use Illuminate\Http\JsonResponse;
 
@@ -38,7 +41,7 @@ class TagController extends Controller
         $tags = Tag::with(['user', 'incidences'])->get();
 
         return response()->json([
-            'data' => $tags,
+            'data' => TagResource::collection($tags),
         ]);
     }
 
@@ -80,7 +83,7 @@ class TagController extends Controller
         );
 
         return response()->json([
-            'data' => $tag->load(['user', 'incidences']),
+            'data' => new TagResource($tag->load(['user', 'incidences'])),
         ], 201);
     }
 
@@ -103,12 +106,12 @@ class TagController extends Controller
      *   }
      * }
      */
-    public function show(int $id): JsonResponse
+    public function show(Tag $tag): JsonResponse
     {
-        $tag = Tag::with(['user', 'incidences'])->findOrFail($id);
+        $tag->load(['user', 'incidences']);
 
         return response()->json([
-            'data' => $tag,
+            'data' => new TagResource($tag),
         ]);
     }
 
@@ -142,10 +145,8 @@ class TagController extends Controller
      *   "message": "No query results for model [App\\Models\\Tag]"
      * }
      */
-    public function update(UpdateTagRequest $request, int $id): JsonResponse
+    public function update(UpdateTagRequest $request, Tag $tag): JsonResponse
     {
-        $tag = Tag::findOrFail($id);
-
         $user = auth()->user();
 
         if (!$user->isAdmin() && $tag->user_id !== $user->id) {
@@ -155,9 +156,11 @@ class TagController extends Controller
         $tag->update([
             'name' => strtolower($request->name),
         ]);
+        
+        $tag->load(['user', 'incidences']);
 
         return response()->json([
-            'data' => $tag->load(['user', 'incidences']),
+            'data' => new TagResource($tag),
         ]);
     }
 
@@ -183,10 +186,8 @@ class TagController extends Controller
      *   "message": "No query results for model [App\\Models\\Tag]"
      * }
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(Tag $tag): JsonResponse
     {
-        $tag = Tag::findOrFail($id);
-
         $user = auth()->user();
 
         if (!$user->isAdmin() && $tag->user_id !== $user->id) {
