@@ -126,4 +126,38 @@ class CommentTest extends TestCase
         $this->assertDatabaseMissing('comments', ['id' => $this->comment->id]);
         $this->assertDatabaseMissing('comments', ['id' => $childComment->id]);
     }
+
+    public function test_create_comment_validates_body_required(): void
+    {
+        Passport::actingAs($this->user);
+        
+        $response = $this->postJson("/api/v1/incidences/{$this->incidence->id}/comments", []);
+        
+        $response->assertStatus(422)
+        ->assertJsonValidationErrors(['body']);
+    }
+
+    public function test_create_comment_validates_body_max_length(): void
+    {
+        Passport::actingAs($this->user);
+
+        $longBody = str_repeat('a', 10001);
+    
+        $response = $this->postJson("/api/v1/incidences/{$this->incidence->id}/comments", [
+            'body' => $longBody,
+        ]);
+    
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['body']);
+    }
+
+    public function test_update_comment_validates_body_required(): void
+    {
+        Passport::actingAs($this->user);
+        
+        $response = $this->putJson("/api/v1/comments/{$this->comment->id}", []);
+        
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['body']);
+    }
 }
