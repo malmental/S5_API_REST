@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Feature;
+namespace Tests\Feature;
 
 use App\Models\Tag;
 use App\Models\User;
@@ -89,4 +89,39 @@ class TagTest extends TestCase
         $this->assertDatabaseMissing('tags', ['id' => $this->tag->id]);
     }
 
+    public function test_create_tag_validates_name_required(): void
+    {
+        Passport::actingAs($this->user);
+
+        $response = $this->postJson('/api/v1/tags', []);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['name']);
+    }
+
+
+    public function test_create_tag_validates_name_max_length(): void
+
+    {
+        Passport::actingAs($this->user);
+    
+        $longName = str_repeat('a', 256);
+    
+        $response = $this->postJson('/api/v1/tags', [
+            'name' => $longName,
+        ]);
+    
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['name']);
+    }
+
+    public function test_update_tag_validates_name_required(): void
+    {
+        Passport::actingAs($this->user);
+    
+        $response = $this->putJson("/api/v1/tags/{$this->tag->id}", []);
+    
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['name']);
+    }
 }
