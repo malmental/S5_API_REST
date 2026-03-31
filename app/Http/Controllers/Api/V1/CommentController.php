@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
+use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use Illuminate\Http\JsonResponse;
 
@@ -64,7 +65,7 @@ class CommentController extends Controller
             ->get();
 
         return response()->json([
-            'data' => $comments,
+            'data' => CommentResource::collection($comments),
         ]);
     }
     /**
@@ -123,7 +124,7 @@ class CommentController extends Controller
         $comment->load('user');
 
         return response()->json([
-            'data' => $comment,
+            'data' => new CommentResource($comment),
         ], 201);
     }
 
@@ -161,13 +162,12 @@ class CommentController extends Controller
      *   "message": "No query results for model [App\\Models\\Comment]"
      * }
      */
-    public function show(int $id): JsonResponse
+    public function show(Comment $comment): JsonResponse
     {
-        $comment = Comment::with(['user', 'children.user', 'parent.user'])->findOrFail($id);
+        $comment->load(['user', 'children.user', 'parent.user']);
 
         return response()->json([
-            'data' => $comment,
-        ]);
+            'data' => new CommentResource($comment)]);
     }
 
     /**
@@ -195,10 +195,8 @@ class CommentController extends Controller
      *   "message": "Unauthorized"
      * }
      */
-    public function update(UpdateCommentRequest $request, int $id): JsonResponse
+    public function update(UpdateCommentRequest $request, Comment $comment): JsonResponse
     {
-        $comment = Comment::findOrFail($id);
-
         if ($comment->user_id !== auth()->id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
@@ -208,7 +206,7 @@ class CommentController extends Controller
         ]);
 
         return response()->json([
-            'data' => $comment,
+            'data' => new CommentResource($comment),
         ]);
     }
 
@@ -233,9 +231,8 @@ class CommentController extends Controller
      *   "message": "No query results for model [App\\Models\\Comment]"
      * }
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(Comment $comment): JsonResponse
     {
-        $comment = Comment::findOrFail($id);
         $user = auth()->user();
 
         if (! $user->isAdmin() && $comment->user_id !== $user->id) {
