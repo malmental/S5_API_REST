@@ -31,16 +31,16 @@ Route::prefix('v1')->group(function () {
     // Comments
     Route::get('/incidences/{incidenceId}/comments', [CommentController::class, 'index']);
     Route::post('/incidences/{incidenceId}/comments', [CommentController::class, 'store'])->middleware('auth:api');
-    Route::get('/comments/{id}', [CommentController::class, 'show']);
-    Route::put('/comments/{id}', [CommentController::class, 'update'])->middleware('auth:api');
-    Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->middleware('auth:api');
+    Route::get('/comments/{comment}', [CommentController::class, 'show']);
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])->middleware('auth:api');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->middleware('auth:api');
 
     // Tags
     Route::get('/tags', [TagController::class, 'index']);
     Route::post('/tags', [TagController::class, 'store'])->middleware('auth:api');
-    Route::get('/tags/{id}', [TagController::class, 'show']);
-    Route::put('/tags/{id}', [TagController::class, 'update'])->middleware('auth:api');
-    Route::delete('/tags/{id}', [TagController::class, 'destroy'])->middleware('auth:api');
+    Route::get('/tags/{tag}', [TagController::class, 'show']);
+    Route::put('/tags/{tag}', [TagController::class, 'update'])->middleware('auth:api');
+    Route::delete('/tags/{tag}', [TagController::class, 'destroy'])->middleware('auth:api');
 
     // Metrics
     Route::get('/metrics', [MetricController::class, 'index'])->middleware('auth:api');
