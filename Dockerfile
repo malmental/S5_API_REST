@@ -1,4 +1,4 @@
-# Usar PHP 8.2 con FPM
+# Usar PHP 8.4 con FPM
 FROM php:8.4-fpm
 
 # Establecer directorio de trabajo
@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev
 
-    # Instalar extensiones de PHP
+# Instalar extensiones de PHP
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Instalar Composer (gestor de dependencias PHP)
@@ -24,11 +24,12 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copiar archivos de Composer
 COPY composer.json composer.lock ./
 
-# Instalar dependencias de PHP
-RUN composer install --no-dev --optimize-autoloader
-
 # Copiar todos los archivos de la aplicación
 COPY . .
+
+# Instalar dependencias de PHP
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+RUN php artisan package:discover --ansi
 
 # Generar clave de aplicación si no existe
 RUN php artisan key:generate --force
