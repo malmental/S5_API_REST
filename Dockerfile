@@ -1,5 +1,5 @@
 # Usar PHP 8.2 con FPM
-FROM php:8.2-fpm
+FROM php:8.4-fpm
 
 # Establecer directorio de trabajo
 WORKDIR /var/www
