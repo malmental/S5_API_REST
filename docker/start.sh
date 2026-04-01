@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Generate APP_KEY if not set
+php artisan key:generate --force
+
 # Ejecutar migraciones primero
 php artisan migrate --force
 

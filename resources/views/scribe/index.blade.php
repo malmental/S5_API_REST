@@ -16,9 +16,8 @@
 
 <script
     id="api-reference"
-    
-    spec-url="http://127.0.0.1:8000/docs.openapi"
-    data-url="{{ route("scribe.openapi") }}">
+    data-url="/docs.openapi"
+    spec-url="https://incidenslydocs.up.railway.app/docs.openapi">
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
 </body>
