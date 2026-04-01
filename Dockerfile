@@ -1,42 +1,33 @@
-# Usar PHP 8.4 con FPM
 FROM php:8.4-fpm
 
-# Establecer directorio de trabajo
-WORKDIR /var/www
-
-# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
     git \
     curl \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libzip-dev \
     zip \
     unzip \
-    libzip-dev
+    nginx
 
-# Instalar extensiones de PHP
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Instalar Composer (gestor de dependencias PHP)
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copiar archivos de Composer
-COPY composer.json composer.lock ./
+WORKDIR /var/www
 
-# Copiar todos los archivos de la aplicación
 COPY . .
 
-# Instalar dependencias de PHP
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+RUN composer install --no-dev --optimize-autoloader
 
-# Permisos correctos
-RUN chown -R www-data:www-data /var/www
-RUN chmod -R 755 /var/www/storage
-RUN chmod -R 755 /var/www/bootstrap/cache
+COPY docker/nginx.conf /etc/nginx/sites-available/default
 
-# Exponer puerto 8000
-EXPOSE 8000
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-# Comando de inicio
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+EXPOSE 10000
+
+COPY docker/start.sh /start.sh
+RUN chmod +x /start.sh
+
+CMD ["/start.sh"]

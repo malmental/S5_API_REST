@@ -2,10 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\Incidence;
-use App\Policies\IncidencePolicy;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,9 +19,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Disable Scribe in production environment
-        if (app()->environment('production')) {
-            config(['scribe.enabled' => false]);
-        }
+        //
     }
 }
