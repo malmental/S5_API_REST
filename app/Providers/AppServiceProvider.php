@@ -22,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Disable Scribe in production environment
+        if (app()->environment('production')) {
+            config(['scribe.enabled' => false]);
+        }
     }
 }
