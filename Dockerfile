@@ -1,0 +1,45 @@
+# Usar PHP 8.2 con FPM
+FROM php:8.2-fpm
+
+# Establecer directorio de trabajo
+WORKDIR /var/www
+
+# Instalar dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml-dev \
+    zip \
+    unzip \
+    libzip-dev
+
+    # Instalar extensiones de PHP
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+
+# Instalar Composer (gestor de dependencias PHP)
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copiar archivos de Composer
+COPY composer.json composer.lock ./
+
+# Instalar dependencias de PHP
+RUN composer install --no-dev --optimize-autoloader
+
+# Copiar todos los archivos de la aplicación
+COPY . .
+
+# Generar clave de aplicación si no existe
+RUN php artisan key:generate --force
+
+# Permisos correctos
+RUN chown -R www-data:www-data /var/www
+RUN chmod -R 755 /var/www/storage
+RUN chmod -R 755 /var/www/bootstrap/cache
+
+# Exponer puerto 8000
+EXPOSE 8000
+
+# Comando de inicio
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
