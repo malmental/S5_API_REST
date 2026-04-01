@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\AuthorizesUser;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Resources\CommentResource;
@@ -16,13 +17,16 @@ use Illuminate\Http\JsonResponse;
  */
 class CommentController extends Controller
 {
+    use AuthorizesUser;
+
     /**
      * List comments.
      * Retrieve all root comments for a specific incidence, including their nested children.
-     * 
+     *
      * @unauthenticated
+     *
      * @urlParam incidenceId int required The ID of the incidence. Example: 1
-     * 
+     *
      * @response 200 scenario="Comments retrieved" {
      *   "data": [
      *     {
@@ -68,16 +72,19 @@ class CommentController extends Controller
             'data' => CommentResource::collection($comments),
         ]);
     }
+
     /**
      * Create a new comment.
-     * Add a new comment to a specific incidence. 
+     * Add a new comment to a specific incidence.
      * The authenticated user will be set as the creator of the comment (user_id).
-     * 
+     *
      * @authenticated
+     *
      * @urlParam incidenceId int required The ID of the incidence to comment on. Example: 1
+     *
      * @bodyParam body string required The content of the comment. Example: "This is a comment."
      * @bodyParam parent_id int optional The ID of the parent comment for replies. Example: 1
-     * 
+     *
      * @response 201 scenario="Comment created" {
      *   "data": {
      *     "id": 1,
@@ -109,7 +116,7 @@ class CommentController extends Controller
                 ->where('incidence_id', $incidenceId)
                 ->first();
 
-            if (!$parentComment) {
+            if (! $parentComment) {
                 return response()->json(['message' => 'Invalid parent_id. Must belong to the same incidence.'], 422);
             }
         }
@@ -131,9 +138,11 @@ class CommentController extends Controller
     /**
      * View a single comment.
      * Get detailed information about a specific comment by its ID, including parent and children.
-     * 
+     *
      * @unauthenticated
+     *
      * @urlParam id integer required The ID of the comment. Example: 1
+     *
      * @response 200 {
      *   "data": {
      *     "id": 1,
@@ -157,7 +166,6 @@ class CommentController extends Controller
      *         "children": [...]
      *       }
      *     ]
-     * 
      * @response 404 scenario="Comment not found" {
      *   "message": "No query results for model [App\\Models\\Comment]"
      * }
@@ -174,11 +182,13 @@ class CommentController extends Controller
      * Update a comment.
      * Update an existing comment by its ID.
      * Only the creator of the comment can update it.
-     * 
+     *
      * @authenticated
+     *
      * @urlParam id integer required The ID of the comment to update. Example: 1
+     *
      * @bodyParam body string required The updated content of the comment. Example: "This is an updated comment."
-     * 
+     *
      * @response 200 scenario="Comment updated" {
      *   "data": {
      *     "id": 1,
@@ -197,8 +207,8 @@ class CommentController extends Controller
      */
     public function update(UpdateCommentRequest $request, Comment $comment): JsonResponse
     {
-        if ($comment->user_id !== auth()->id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if ($response = $this->authorizeOwner($comment)) {
+            return $response;
         }
 
         $comment->update([
@@ -214,10 +224,11 @@ class CommentController extends Controller
      * Delete a comment.
      * Delete an existing comment by its ID.
      * Only the creator of the comment or an admin can delete it.
-     * 
+     *
      * @authenticated
+     *
      * @urlParam id integer required The ID of the comment to delete. Example: 1
-     * 
+     *
      * @response 200 scenario="Comment deleted" {
      *   "message": "Comment deleted successfully"
      * }
@@ -233,10 +244,8 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment): JsonResponse
     {
-        $user = auth()->user();
-
-        if (! $user->isAdmin() && $comment->user_id !== $user->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if ($response = $this->authorizeOwnerOrAdmin($comment)) {
+            return $response;
         }
 
         $comment->delete();
