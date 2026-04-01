@@ -29,10 +29,6 @@ COPY . .
 
 # Instalar dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader --no-scripts
-RUN php artisan package:discover --ansi
-
-# Generar clave de aplicación si no existe
-RUN php artisan key:generate --force
 
 # Permisos correctos
 RUN chown -R www-data:www-data /var/www
