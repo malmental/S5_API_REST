@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\AuthorizesUser;
 use App\Http\Requests\StoreIncidenceRequest;
 use App\Http\Requests\UpdateIncidenceRequest;
+use App\Http\Resources\IncidenceResource;
 use App\Models\Incidence;
 use App\Models\Tag;
-use App\Http\Resources\IncidenceResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -18,16 +19,19 @@ use Illuminate\Support\Str;
  */
 class IncidenceController extends Controller
 {
+    use AuthorizesUser;
+
     /**
      * List all incidences.
      * Retrieve all incidences with optional filters.
-     * 
+     *
      * @unauthenticated
+     *
      * @queryParam status string Filter by status (open, in_progress, closed).
      * @queryParam priority string Filter by priority (low, medium, high).
      * @queryParam tags string Filter by comma-separated list of tag IDs. Example: 1, 2, 3
      * @queryParam search string Search by title or description. Examplo: server
-     * 
+     *
      * @response 200 scenario="Incidences retrieved" {
      *   "data": [
      *     {
@@ -70,7 +74,7 @@ class IncidenceController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -93,15 +97,16 @@ class IncidenceController extends Controller
      * Create a new incidence.
      * Create a new incidence with the provided details.
      * The authenticated user will be set as the creator of the incidence (user_id).
-     * 
+     *
      * @authenticated
+     *
      * @bodyParam title string required The title of the incidence. Example: "Server Down"
      * @bodyParam description string required A detailed description of the incidence. Example: "The main server is not responding since 3 PM."
      * @bodyParam status string with the status of the incidence. Allowed values: open, in_progress, closed. Default is "open".
      * @bodyParam priority string with the priority level of the incidence. Allowed values: low, medium, high. Default is "medium".
      * @bodyParam assigned_to integer ID of the user assigned to handle this incidence. Example: 2
      * @bodyParam tags string A comma-separated list of tags to associate with the incidence. Example: "server, urgent, backend"
-     * 
+     *
      * @response 201 scenario="Incidence created" {
      *   "data": [
      *     {
@@ -157,11 +162,12 @@ class IncidenceController extends Controller
 
     /**
      * View a single incidence.
-     * Get detailed information about a specific incidence by its ID. 
-     * 
+     * Get detailed information about a specific incidence by its ID.
+     *
      * @unauthenticated
+     *
      * @urlParam id integer required The ID of the incidence. Example: 1
-     * 
+     *
      * @response 200 scenario="Incidence retrieved" {
      *   "data": [
      *     {
@@ -191,16 +197,18 @@ class IncidenceController extends Controller
      * Update an incidence.
      * Update an existing incidence by its ID.
      * Only the creator of the incidence or an admin can update it.
-     * 
+     *
      * @authenticated
+     *
      * @urlParam id integer required The ID of the incidence to update. Example: 1
+     *
      * @bodyParam title string The title of the incidence. Example: "Server Down - Updated"
      * @bodyParam description string The description of the incidence. Example: "Main server not responding - Updated"
      * @bodyParam status string The status of the incidence. Example: "in_progress"
      * @bodyParam priority string The priority of the incidence. Example: "high"
      * @bodyParam assigned_to integer The ID of the user assigned to handle this incidence. Example: 2
      * @bodyParam tags string A comma-separated list of tags to associate with the incidence. Example: "server, urgent, backend"
-     * 
+     *
      * @response 200 scenario="Incidence updated" {
      *  "data": [
      *      {
@@ -228,10 +236,8 @@ class IncidenceController extends Controller
      */
     public function update(UpdateIncidenceRequest $request, Incidence $incidence): JsonResponse
     {
-        $user = auth()->user();
-
-        if (!$user->isAdmin() && $incidence->user_id !== $user->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if ($response = $this->authorizeOwnerOrAdmin($incidence)) {
+            return $response;
         }
 
         $incidence->update($request->except('tags'));
@@ -239,9 +245,9 @@ class IncidenceController extends Controller
         if ($request->has('tags')) {
             $this->syncTags($incidence, $request->tags);
         }
-    
+
         $incidence->load(['user', 'assignedUser', 'tags']);
-    
+
         return response()->json([
             'data' => $incidence,
         ]);
@@ -251,10 +257,11 @@ class IncidenceController extends Controller
      * Delete an incidence.
      * Delete an existing incidence by its ID.
      * Only the creator of the incidence or an admin can delete it.
-     * 
+     *
      * @authenticated
+     *
      * @urlParam id integer required The ID of the incidence to delete. Example: 1
-     * 
+     *
      * @response 200 scenario="Incidence deleted" {
      *  "message": "Incidence deleted successfully"
      * }
@@ -267,10 +274,8 @@ class IncidenceController extends Controller
      */
     public function destroy(Incidence $incidence): JsonResponse
     {
-        $user = auth()->user();
-
-        if (!$user->isAdmin() && $incidence->user_id !== $user->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if ($response = $this->authorizeOwnerOrAdmin($incidence)) {
+            return $response;
         }
 
         $incidence->delete();
