@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Middleware\IsAdmin;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -14,11 +16,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-    $middleware->redirectGuestsTo(function (Request $request) {
-        return null;
+        $middleware->api(prepend: [
+            HandleCors::class,
+        ]);
+        $middleware->redirectGuestsTo(function (Request $request) {
+            return null;
         });
-    $middleware->alias([
-        'is_admin' => \App\Http\Middleware\IsAdmin::class,
+        $middleware->alias([
+            'is_admin' => IsAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
