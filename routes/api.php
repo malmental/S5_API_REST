@@ -3,8 +3,8 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CommentController;
 use App\Http\Controllers\Api\V1\IncidenceController;
-use App\Http\Controllers\Api\V1\TagController;
 use App\Http\Controllers\Api\V1\MetricController;
+use App\Http\Controllers\Api\V1\TagController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +22,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/incidences', [IncidenceController::class, 'store']);
         Route::put('/incidences/{incidence}', [IncidenceController::class, 'update']);
         Route::delete('/incidences/{incidence}', [IncidenceController::class, 'destroy']);
+        Route::get('/my-incidences', [IncidenceController::class, 'myIncidences']);
     });
 
     // Incidences (public)

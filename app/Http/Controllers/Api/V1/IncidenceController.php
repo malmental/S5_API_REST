@@ -94,6 +94,60 @@ class IncidenceController extends Controller
     }
 
     /**
+     * List my incidences.
+     * Retrieve incidences created by the authenticated user.
+     *
+     * @authenticated
+     *
+     * @queryParam status string Filter by status (open, in_progress, closed).
+     * @queryParam priority string Filter by priority (low, medium, high).
+     * @queryParam search string Search by title or description.
+     *
+     * @response 200 scenario="Incidences retrieved" {
+     *   "data": [...],
+     *   "meta": {...}
+     * }
+     * @response 401 scenario="Unauthenticated" {
+     *  "message": "Unauthenticated."
+     * }
+     */
+    public function myIncidences(Request $request): JsonResponse
+    {
+        $query = Incidence::with(['user', 'assignedUser', 'tags'])
+            ->where('user_id', auth()->id());
+
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('priority')) {
+            $query->where('priority', $request->priority);
+        }
+
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        $perPage = min($request->per_page ?? 15, 100);
+
+        $incidences = $query->orderBy('created_at', 'desc')->paginate($perPage);
+
+        return response()->json([
+            'data' => IncidenceResource::collection($incidences),
+            'meta' => [
+                'current_page' => $incidences->currentPage(),
+                'last_page' => $incidences->lastPage(),
+                'per_page' => $incidences->perPage(),
+                'total' => $incidences->total(),
+            ],
+        ]);
+    }
+
+    /**
      * Create a new incidence.
      * Create a new incidence with the provided details.
      * The authenticated user will be set as the creator of the incidence (user_id).
@@ -186,7 +240,7 @@ class IncidenceController extends Controller
      */
     public function show(Incidence $incidence): JsonResponse
     {
-        $incidence->load(['user', 'assignedUser', 'tags']);
+        $incidence->load(['user', 'assignedUser', 'tags', 'comments.user']);
 
         return response()->json([
             'data' => new IncidenceResource($incidence),
