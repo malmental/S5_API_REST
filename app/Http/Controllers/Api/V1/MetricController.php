@@ -64,13 +64,11 @@ class MetricController extends Controller
                     'open' => $countsByStatus['open'] ?? 0,
                     'in_progress' => $countsByStatus['in_progress'] ?? 0,
                     'resolved' => $countsByStatus['resolved'] ?? 0,
-                    'closed' => $countsByStatus['closed'] ?? 0,
                 ],
                 'by_priority' => [
                     'low' => $countsByPriority['low'] ?? 0,
                     'medium' => $countsByPriority['medium'] ?? 0,
                     'high' => $countsByPriority['high'] ?? 0,
-                    'critical' => $countsByPriority['critical'] ?? 0,
                 ],
             ],
         ]);

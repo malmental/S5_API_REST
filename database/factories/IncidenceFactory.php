@@ -16,7 +16,7 @@ class IncidenceFactory extends Factory
             'title' => fake()->sentence(),
             'description' => fake()->paragraph(),
             'status' => fake()->randomElement(['open', 'in_progress', 'resolved', 'closed']),
-            'priority' => fake()->randomElement(['low', 'medium', 'high', 'critical']),
+            'priority' => fake()->randomElement(['low', 'medium', 'high']),
             'user_id' => User::factory(),
             'assigned_to' => null,
         ];

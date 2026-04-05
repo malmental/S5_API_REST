@@ -28,9 +28,9 @@ class IncidenceSeeder extends Seeder
         }
 
         $statuses = ['open', 'in_progress', 'resolved', 'closed'];
-        
-        $priorities = ['low', 'medium', 'high', 'critical'];
-        
+
+        $priorities = ['low', 'medium', 'high'];
+
         $titles = [
             'Error en el sistema de login',
             'Fallo en la carga de imágenes',
@@ -54,9 +54,9 @@ class IncidenceSeeder extends Seeder
         ];
 
         for ($i = 1; $i <= 20; $i++) {
-            $title = $titles[array_rand($titles)] . ' #' . $i;
-            $description = 'Descripción de prueba para la incidencia #' . $i . '. Este es un texto aleatorio para la base de datos.';
-            
+            $title = $titles[array_rand($titles)].' #'.$i;
+            $description = 'Descripción de prueba para la incidencia #'.$i.'. Este es un texto aleatorio para la base de datos.';
+
             Incidence::create([
                 'title' => $title,
                 'description' => $description,
