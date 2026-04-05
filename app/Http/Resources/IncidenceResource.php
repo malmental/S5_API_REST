@@ -26,6 +26,7 @@ class IncidenceResource extends JsonResource
             'user' => new UserResource($this->whenLoaded('user')),
             'assignedUser' => new UserResource($this->whenLoaded('assignedUser')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
+            'comments' => CommentResource::collection($this->whenLoaded('comments')),
         ];
     }
 }

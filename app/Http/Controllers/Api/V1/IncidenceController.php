@@ -53,7 +53,7 @@ class IncidenceController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Incidence::with(['user', 'assignedUser', 'tags']);
+        $query = Incidence::with(['user', 'assignedUser', 'tags', 'comments.user']);
 
         if ($request->has('status')) {
             $query->where('status', $request->status);
@@ -78,7 +78,7 @@ class IncidenceController extends Controller
             });
         }
 
-        $perPage = min($request->per_page ?? 15, 100);
+        $perPage = min($request->per_page ?? 10, 100);
 
         $incidences = $query->orderBy('created_at', 'desc')->paginate($perPage);
 
@@ -113,7 +113,7 @@ class IncidenceController extends Controller
      */
     public function myIncidences(Request $request): JsonResponse
     {
-        $query = Incidence::with(['user', 'assignedUser', 'tags'])
+        $query = Incidence::with(['user', 'assignedUser', 'tags', 'comments.user'])
             ->where('user_id', auth()->id());
 
         if ($request->has('status')) {
@@ -132,7 +132,7 @@ class IncidenceController extends Controller
             });
         }
 
-        $perPage = min($request->per_page ?? 15, 100);
+        $perPage = min($request->per_page ?? 10, 100);
 
         $incidences = $query->orderBy('created_at', 'desc')->paginate($perPage);
 

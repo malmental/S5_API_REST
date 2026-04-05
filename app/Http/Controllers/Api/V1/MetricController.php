@@ -16,8 +16,9 @@ class MetricController extends Controller
     /**
      * List Metrics.
      * Retrieve aggregated metrics and statistics about incidences.
-     * 
+     *
      * @authenticated
+     *
      * @response 200 scenario="Metrics retrieved" {
      *   "data": {
      *     "by_status": {
@@ -42,29 +43,34 @@ class MetricController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $perPage = min($request->per_page ?? 20, 100);
+        $countsByStatus = Incidence::select('status')
+            ->selectRaw('COUNT(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status')
+            ->toArray();
 
-        $incidences = Incidence::with(['user', 'tags'])
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
+        $countsByPriority = Incidence::select('priority')
+            ->selectRaw('COUNT(*) as total')
+            ->groupBy('priority')
+            ->pluck('total', 'priority')
+            ->toArray();
 
-        $byStatus = $incidences->groupBy('status');
-
-        $byPriority = $incidences->groupBy('priority');
+        $total = Incidence::count();
 
         return response()->json([
             'data' => [
+                'total' => $total,
                 'by_status' => [
-                    'open' => $byStatus->get('open', collect())->values(),
-                    'in_progress' => $byStatus->get('in_progress', collect())->values(),
-                    'resolved' => $byStatus->get('resolved', collect())->values(),
-                    'closed' => $byStatus->get('closed', collect())->values(),
+                    'open' => $countsByStatus['open'] ?? 0,
+                    'in_progress' => $countsByStatus['in_progress'] ?? 0,
+                    'resolved' => $countsByStatus['resolved'] ?? 0,
+                    'closed' => $countsByStatus['closed'] ?? 0,
                 ],
                 'by_priority' => [
-                    'low' => $byPriority->get('low', collect())->values(),
-                    'medium' => $byPriority->get('medium', collect())->values(),
-                    'high' => $byPriority->get('high', collect())->values(),
-                    'critical' => $byPriority->get('critical', collect())->values(),
+                    'low' => $countsByPriority['low'] ?? 0,
+                    'medium' => $countsByPriority['medium'] ?? 0,
+                    'high' => $countsByPriority['high'] ?? 0,
+                    'critical' => $countsByPriority['critical'] ?? 0,
                 ],
             ],
         ]);
