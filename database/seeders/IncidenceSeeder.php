@@ -27,7 +27,7 @@ class IncidenceSeeder extends Seeder
             Tag::firstOrCreate(['name' => $tagData['name']], $tagData);
         }
 
-        $statuses = ['open', 'in_progress', 'resolved', 'closed'];
+        $statuses = ['open', 'in_progress', 'closed'];
 
         $priorities = ['low', 'medium', 'high'];
 
