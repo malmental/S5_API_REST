@@ -57,7 +57,7 @@ class IncidenceSeeder extends Seeder
             $title = $titles[array_rand($titles)].' #'.$i;
             $description = 'Descripción de prueba para la incidencia #'.$i.'. Este es un texto aleatorio para la base de datos.';
 
-            Incidence::create([
+            $incidence = Incidence::create([
                 'title' => $title,
                 'description' => $description,
                 'status' => $statuses[array_rand($statuses)],
@@ -65,6 +65,9 @@ class IncidenceSeeder extends Seeder
                 'user_id' => rand(1, 2),
                 'assigned_to' => rand(1, 2),
             ]);
+
+            $randomTags = Tag::inRandomOrder()->limit(rand(1, 3))->pluck('id');
+            $incidence->tags()->attach($randomTags);
         }
     }
 }
