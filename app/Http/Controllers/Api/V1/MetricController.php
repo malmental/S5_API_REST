@@ -26,7 +26,6 @@ class MetricController extends Controller
      *         {"id": 1, "title": "Server Down", "status": "open", "priority": "critical", ...}
      *       ],
      *       "in_progress": [],
-     *       "resolved": [],
      *       "closed": []
      *     },
      *     "by_priority": {
@@ -63,7 +62,7 @@ class MetricController extends Controller
                 'by_status' => [
                     'open' => $countsByStatus['open'] ?? 0,
                     'in_progress' => $countsByStatus['in_progress'] ?? 0,
-                    'resolved' => $countsByStatus['resolved'] ?? 0,
+                    'closed' => $countsByStatus['closed'] ?? 0,
                 ],
                 'by_priority' => [
                     'low' => $countsByPriority['low'] ?? 0,
