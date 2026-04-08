@@ -16,8 +16,8 @@ class StoreIncidenceRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'status' => ['nullable', 'in:open,in_progress,resolved,closed'],
-            'priority' => ['nullable', 'in:low,medium,high,critical'],
+            'status' => ['nullable', 'in:open,in_progress,closed'],
+            'priority' => ['nullable', 'in:low,medium,high'],
             'assigned_to' => ['nullable', 'exists:users,id'],
             'tags' => ['nullable', 'string', 'max:255'],
         ];
