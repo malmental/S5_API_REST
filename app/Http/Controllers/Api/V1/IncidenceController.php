@@ -302,7 +302,7 @@ class IncidenceController extends Controller
 
         $incidence->update($request->except('tags'));
 
-        if ($request->has('tags')) {
+        if ($request->filled('tags')) {
             $this->syncTags($incidence, $request->tags);
         }
 
