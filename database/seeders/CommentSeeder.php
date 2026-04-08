@@ -27,13 +27,13 @@ class CommentSeeder extends Seeder
             'parent_id' => null,
         ]);
         $comment1_1 = Comment::create([
-            'body' => 'Respuesta de Salem al primer comentario',
+            'body' => 'Respuesta al primer comentario',
             'user_id' => 1,
             'incidence_id' => $incidence1->id,
             'parent_id' => $comment1->id,
         ]);
         Comment::create([
-            'body' => 'Respuesta anidada de Malo Mentalo',
+            'body' => 'Respuesta anidada al primer comentario',
             'user_id' => 2,
             'incidence_id' => $incidence1->id,
             'parent_id' => $comment1_1->id,
