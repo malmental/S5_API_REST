@@ -20,7 +20,7 @@ class IncidenceResource extends JsonResource
             'description' => $this->description,
             'status' => $this->status,
             'priority' => $this->priority,
-            'assigned_to' => $this->assignedTo,
+            'assigned_to' => $this->assigned_to,
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
             'user' => new UserResource($this->whenLoaded('user')),
