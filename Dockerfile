@@ -30,7 +30,7 @@ COPY docker/nginx.conf /etc/nginx/sites-available/default
 
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-EXPOSE 10000
+EXPOSE 8080
 
 COPY docker/start.sh /start.sh
 RUN chmod +x /start.sh
