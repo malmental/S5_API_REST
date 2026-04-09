@@ -1,16 +1,18 @@
 #!/bin/bash
 
-# Generate APP_KEY if not set
-php artisan key:generate --force
+# Only generate APP_KEY if not already set in environment
+if [ -z "$APP_KEY" ]; then
+    php artisan key:generate --force
+fi
 
-# Ejecutar migraciones primero
+# Run migrations
 php artisan migrate --force
 
-# Instalar Passport
+# Install Passport
 php artisan passport:install --force
 
-# Iniciar PHP-FPM 
+# Start PHP-FPM 
 php-fpm -D
 
-# Iniciar Nginx
+# Start Nginx
 nginx -g "daemon off;"
