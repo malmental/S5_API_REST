@@ -24,11 +24,14 @@ QUEUE_CONNECTION=sync
 SESSION_DRIVER=file
 EOF
 
+# Remove old passport migrations to avoid conflict
+rm -f /var/www/database/migrations/*passport*.php
+
+# Install Passport (copies migrations)
+php artisan passport:install --force
+
 # Run migrations
 php artisan migrate --force
-
-# Install Passport
-php artisan passport:install --force
 
 # Link storage
 php artisan storage:link

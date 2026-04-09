@@ -26,7 +26,7 @@ RUN composer install --no-dev --optimize-autoloader
 # Configure PHP-FPM to listen on port 9000
 RUN sed -i 's/listen = .*/listen = 0.0.0.0:9000/' /usr/local/etc/php-fpm.d/www.conf
 
-COPY docker/nginx.conf /etc/nginx/sites-available/default
+COPY docker/nginx.conf /docker/nginx.conf
 
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
