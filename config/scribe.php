@@ -38,7 +38,7 @@ return [
 
     // The base URL displayed in the docs.
     // If you're using `laravel` type, you can set this to a dynamic string, like '{{ config("app.tenant_url") }}' to get a dynamic base URL.
-    'base_url' => env('APP_URL', 'http://localhost:8000'),
+    'base_url' => config('app.url'),
 
     // Routes to include in the docs
     'routes' => [
@@ -59,6 +59,7 @@ return [
             // Exclude these routes even if they matched the rules above.
             'exclude' => [
                 'api/documentation*',
+                'docs*',
             ],
         ],
     ],
@@ -67,23 +68,15 @@ return [
     // - "static" will generate a static HTMl page in the /public/docs folder,
     // - "laravel" will generate the documentation as a Blade view, so you can add routing and authentication.
     // - "external_static" and "external_laravel" do the same as above, but pass the OpenAPI spec as a URL to an external UI template
-    'type' => 'external_laravel',
+    'type' => 'laravel',
 
-    'theme' => 'scalar',
+    // See https://scribe.knuckles.wtf/laravel/reference/config#theme for supported options
+    'theme' => 'default',
 
     'static' => [
+        // HTML documentation, assets and Postman collection will be generated to this folder.
+        // Source Markdown will still be in resources/docs.
         'output_path' => 'public/docs',
-    ],
-
-    'laravel' => [
-        'add_routes' => true,
-        'docs_url' => '/docs',
-    ],
-
-    'external' => [
-        'html_attributes' => [
-            'data-url' => '/docs.openapi',
-        ],
     ],
 
     'laravel' => [
@@ -110,9 +103,17 @@ return [
     ],
 
     'try_it_out' => [
+        // Add a Try It Out button to your endpoints so consumers can test endpoints right from their browser.
+        // Don't forget to enable CORS headers for your endpoints.
         'enabled' => true,
-        'base_url' => null,
+
+        // The base URL to use in the API tester. Leave as null to be the same as the displayed URL (`scribe.base_url`).
+        'base_url' => env('APP_URL', 'http://127.0.0.1:8000'),
+
+        // [Laravel Sanctum] Fetch a CSRF token before each request, and add it as an X-XSRF-TOKEN header.
         'use_csrf' => false,
+
+        // The URL to fetch the CSRF token from (if `use_csrf` is true).
         'csrf_url' => '/sanctum/csrf-cookie',
     ],
 
@@ -226,15 +227,32 @@ return [
     // The strategies Scribe will use to extract information about your routes at each stage.
     // Use configureStrategy() to specify settings for a strategy in the list.
     // Use removeStrategies() to remove an included strategy.
-    // Dejar strategies vacío para usar los valores por defecto
     'strategies' => [
-        'metadata' => [],
-        'headers' => [],
-        'urlParameters' => [],
-        'queryParameters' => [],
-        'bodyParameters' => [],
-        'responses' => [],
-        'responseFields' => [],
+        'metadata' => [
+            \Knuckles\Scribe\Config\Defaults::METADATA_STRATEGIES,
+        ],
+        'headers' => [
+            \Knuckles\Scribe\Config\Defaults::HEADERS_STRATEGIES,
+            Strategies\StaticData::withSettings(data: [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+            ]),
+        ],
+        'urlParameters' => [
+            \Knuckles\Scribe\Config\Defaults::URL_PARAMETERS_STRATEGIES,
+        ],
+        'queryParameters' => [
+            \Knuckles\Scribe\Config\Defaults::QUERY_PARAMETERS_STRATEGIES,
+        ],
+        'bodyParameters' => [
+            \Knuckles\Scribe\Config\Defaults::BODY_PARAMETERS_STRATEGIES,
+        ],
+        'responses' => [
+            \Knuckles\Scribe\Config\Defaults::RESPONSES_STRATEGIES,
+        ],
+        'responseFields' => [
+            \Knuckles\Scribe\Config\Defaults::RESPONSE_FIELDS_STRATEGIES,
+        ],
     ],
 
     // For response calls, API resource responses and transformer responses,

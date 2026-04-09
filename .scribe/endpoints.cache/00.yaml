@@ -55,7 +55,29 @@ endpoints:
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
+<<<<<<< HEAD
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+          }
+        headers: []
+        description: 'Login successful'
+      -
+        custom: []
+        status: 401
+        content: |-
+          {
+            "message": "Invalid credentials"
+          }
+        headers: []
+        description: 'Invalid credentials'
+=======
     responses: []
+>>>>>>> origin/develop
     responseFields: []
     auth: []
     controller: null

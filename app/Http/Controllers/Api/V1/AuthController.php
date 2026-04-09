@@ -29,7 +29,7 @@ class AuthController extends Controller
      * @response 201 scenario="User created successfully" {
      *   "data": {
      *     "id": 1,
-     *     "name": "New User", ",
+     *     "name": "New User",
      *     "email": "newuser@example.com"
      *   },
      *   "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
@@ -73,6 +73,9 @@ class AuthController extends Controller
      * @bodyParam email string required User's email address.
      * @bodyParam password string required User's password.
      *
+     * @response 200 scenario="Login successful" {
+     *   "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+     * }
      * @response 401 scenario="Invalid credentials" {
      *   "message": "Invalid credentials"
      * }
