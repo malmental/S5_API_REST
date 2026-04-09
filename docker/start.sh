@@ -24,8 +24,8 @@ QUEUE_CONNECTION=sync
 SESSION_DRIVER=file
 EOF
 
-# Install Passport keys only (skip migrate - tables already exist)
-php artisan passport:install --force --migrate=never
+# Generate Passport encryption keys only (tables already exist)
+php artisan passport:keys --force
 
 # Link storage
 php artisan storage:link
