@@ -1,0 +1,384 @@
+name: Tags
+description: 'Endpoints for managing tags, including listing, creating, viewing, updating, and deleting tags.'
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/tags
+    metadata:
+      custom: []
+      groupName: Tags
+      groupDescription: 'Endpoints for managing tags, including listing, creating, viewing, updating, and deleting tags.'
+      subgroup: null
+      subgroupDescription: null
+      title: 'List all tags.'
+      description: 'Retrieve all tags with their associated users and incidences.'
+      authenticated: false
+      deprecated: false
+    headers: []
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": [
+              {
+                "id": 1,
+                "name": "tag1",
+                "user_id": 1,
+                "created_at": "2026-01-01T00:00:00Z",
+                "updated_at": "2026-01-01T00:00:00Z",
+                "user": {...},
+                "incidences": [...]
+              }
+            ]
+          }
+        headers: []
+        description: 'Tags retrieved'
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/tags
+    metadata:
+      custom: []
+      groupName: Tags
+      groupDescription: 'Endpoints for managing tags, including listing, creating, viewing, updating, and deleting tags.'
+      subgroup: null
+      subgroupDescription: null
+      title: 'Create a new tag.'
+      description: |-
+        Create a new tag or reuse an existing one with the same name (case-insensitive).
+        Uses firstOrCreate to ensure atomicity and prevent duplicates.
+        Tag names are stored in lowercase to enforce case-insensitivity.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'The name of the tag (stored in lowercase).'
+        required: true
+        example: Server
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      name: Server
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: |-
+          {
+            "data": {
+              "id": 1,
+              "name": "server",
+              "user_id": 1,
+              "created_at": "2026-01-01T00:00:00Z",
+              "updated_at": "2026-01-01T00:00:00Z",
+              "user": {...},
+              "incidences": [...]
+            }
+          }
+        headers: []
+        description: 'Tag created'
+      -
+        custom: []
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: Unauthorized
+      -
+        custom: []
+        status: 422
+        content: |-
+          {
+            "message": "The given data was invalid.",
+            "errors": {
+              "name": ["The name field is required."]
+            }
+          }
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/tags/{tag_id}'
+    metadata:
+      custom: []
+      groupName: Tags
+      groupDescription: 'Endpoints for managing tags, including listing, creating, viewing, updating, and deleting tags.'
+      subgroup: null
+      subgroupDescription: null
+      title: 'View a single tag.'
+      description: 'Get detailed information about a specific tag by its ID, including the user who created it and the incidences associated with it.'
+      authenticated: false
+      deprecated: false
+    headers: []
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the tag.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": {
+              "id": 1,
+              "name": "server",
+              "user_id": 1,
+              "created_at": "2026-01-01T00:00:00Z",
+              "updated_at": "2026-01-01T00:00:00Z",
+              "user": {...},
+              "incidences": [...]
+            }
+          }
+        headers: []
+        description: 'Tag retrieved'
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+    uri: 'api/v1/tags/{tag_id}'
+    metadata:
+      custom: []
+      groupName: Tags
+      groupDescription: 'Endpoints for managing tags, including listing, creating, viewing, updating, and deleting tags.'
+      subgroup: null
+      subgroupDescription: null
+      title: 'Update a tag.'
+      description: |-
+        Update the details of an existing tag.
+        Only the creator of the tag or an admin can update it.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the tag.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'The name of the tag (stored in lowercase).'
+        required: true
+        example: Server
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      name: Server
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": {
+              "id": 1,
+              "name": "server",
+              "user_id": 1,
+              "created_at": "2026-01-01T00:00:00Z",
+              "updated_at": "2026-01-01T00:00:00Z",
+              "user": {...},
+              "incidences": [...]
+            }
+          }
+        headers: []
+        description: 'Tag updated'
+      -
+        custom: []
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: Unauthorized
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "message": "Unauthorized"
+          }
+        headers: []
+        description: Forbidden
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "message": "No query results for model [App\\Models\\Tag]"
+          }
+        headers: []
+        description: 'Not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/v1/tags/{tag_id}'
+    metadata:
+      custom: []
+      groupName: Tags
+      groupDescription: 'Endpoints for managing tags, including listing, creating, viewing, updating, and deleting tags.'
+      subgroup: null
+      subgroupDescription: null
+      title: 'Delete a tag.'
+      description: |-
+        Delete an existing tag.
+        Only the creator of the tag or an admin can delete it.
+        Note: This removes the tag from all associated incidences (pivot table).
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the tag.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "message": "Tag deleted successfully"
+          }
+        headers: []
+        description: 'Tag deleted'
+      -
+        custom: []
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: Unauthorized
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "message": "Unauthorized"
+          }
+        headers: []
+        description: Forbidden
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "message": "No query results for model [App\\Models\\Tag]"
+          }
+        headers: []
+        description: 'Not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

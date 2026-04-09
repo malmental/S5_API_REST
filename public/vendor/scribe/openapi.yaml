@@ -8,8 +8,23 @@ servers:
     url: 'http://127.0.0.1:8000'
 tags:
   -
-    name: Endpoints
-    description: ''
+    name: Authentication
+    description: 'Endpoints for user registration, login, logout and profile view.'
+  -
+    name: Comments
+    description: "Endpoints for managing comments on incidences, including listing, creating, viewing, updating, and deleting comments.\nReturns only root comments (parent_id = null) with their nested children."
+  -
+    name: Incidences
+    description: 'Endpoints for managing incidences, including listing, creating, viewing, updating, and deleting incidences.'
+  -
+    name: Metrics
+    description: 'Endpoints for retrieving aggregated metrics and statistics about incidences, such as counts by status and priority.'
+  -
+    name: Tags
+    description: 'Endpoints for managing tags, including listing, creating, viewing, updating, and deleting tags.'
+  -
+    name: Users
+    description: "Endpoints for managing users, including listing all users, viewing a single user, retrieving a user's incidences, and deleting a user."
 components:
   securitySchemes:
     default:
@@ -22,231 +37,1456 @@ security:
 paths:
   /api/v1/register:
     post:
-      summary: null
-      operationId: postApiV1Register
-      description: null
+      summary: 'Register a new user.'
+      operationId: registerANewUser
+      description: 'Create a new user account and returns an OAuth token.'
       parameters: []
-      responses: {  }
+      responses:
+        201:
+          description: 'User created successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 1
+                    name: 'New User'
+                    email: newuser@example.com
+                  token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: 'New User'
+                      email:
+                        type: string
+                        example: newuser@example.com
+                  token:
+                    type: string
+                    example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...
+        401:
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+        422:
+          description: 'Validation error'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The given data was invalid.'
+                  errors:
+                    email:
+                      - 'The email has already been taken.'
+                properties:
+                  message:
+                    type: string
+                    example: 'The given data was invalid.'
+                  errors:
+                    type: object
+                    properties:
+                      email:
+                        type: array
+                        example:
+                          - 'The email has already been taken.'
+                        items:
+                          type: string
       tags:
-        - Endpoints
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: "User's full name (max 255 chars)."
+                  example: 'New User'
+                email:
+                  type: string
+                  description: "User's email address (must be unique)."
+                  example: newuser@example.com
+                password:
+                  type: string
+                  description: 'Minimum 8 characers.'
+                  example: password123
+                password_confirmation:
+                  type: string
+                  description: 'Must match the password field.'
+                  example: password123
+              required:
+                - name
+                - email
+                - password
+                - password_confirmation
       security: []
   /api/v1/login:
     post:
-      summary: null
-      operationId: postApiV1Login
-      description: null
+      summary: 'Login user.'
+      operationId: loginUser
+      description: 'Authenticate user with email and password, returns an OAuth token on success.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: 'Login successful'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...
+                properties:
+                  token:
+                    type: string
+                    example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...
+        401:
+          description: 'Invalid credentials'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Invalid credentials'
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid credentials'
       tags:
-        - Endpoints
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: "User's email address."
+                  example: gbailey@example.net
+                password:
+                  type: string
+                  description: "User's password."
+                  example: '|]|{+-'
+              required:
+                - email
+                - password
       security: []
   /api/v1/logout:
     post:
-      summary: null
-      operationId: postApiV1Logout
-      description: null
+      summary: 'Logout user.'
+      operationId: logoutUser
+      description: "Invalidate the user's current access token, effectively logging them out."
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: 'Log out succesful'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Logged out successfully'
+                properties:
+                  message:
+                    type: string
+                    example: 'Logged out successfully'
+        401:
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
       tags:
-        - Endpoints
-      security: []
+        - Authentication
   /api/v1/me:
     get:
-      summary: null
-      operationId: getApiV1Me
-      description: null
+      summary: 'Get current user profile.'
+      operationId: getCurrentUserProfile
+      description: "Returns the authenticated user's profile information."
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: 'User profile retrieved successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 1
+                    name: 'New User'
+                    email: newuser@example.com
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: 'New User'
+                      email:
+                        type: string
+                        example: newuser@example.com
+        401:
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
       tags:
-        - Endpoints
+        - Authentication
+  '/api/v1/incidences/{incidenceId}/comments':
+    get:
+      summary: 'List comments.'
+      operationId: listComments
+      description: 'Retrieve all root comments for a specific incidence, including their nested children.'
+      parameters: []
+      responses:
+        200:
+          description: 'Comments retrieved'
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"body\": \"This is a comment\",\n      \"user_id\": 1,\n      \"incidence_id\": 1,\n      \"parent_id\": null,\n      \"created_at\": \"2026-01-01T00:00:00Z\",\n      \"updated_at\": \"2026-01-01T00:00:00Z\",\n      \"user\": {...},\n      \"children\": [\n        {\n          \"id\": 2,\n          \"body\": \"This is a reply\",\n          \"user_id\": 2,\n          \"incidence_id\": 1,\n          \"parent_id\": 1,\n          \"created_at\": \"2026-01-01T00:00:00Z\",\n          \"updated_at\": \"2026-01-01T00:00:00Z\",\n          \"user\": {...},\n          \"children\": [...]\n        }\n      ]\n    }\n  ]\n}"
+        404:
+          description: 'Incidence not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'No query results for model [App\Models\Incidence]'
+                properties:
+                  message:
+                    type: string
+                    example: 'No query results for model [App\Models\Incidence]'
+      tags:
+        - Comments
       security: []
+    post:
+      summary: 'Create a new comment.'
+      operationId: createANewComment
+      description: "Add a new comment to a specific incidence.\nThe authenticated user will be set as the creator of the comment (user_id)."
+      parameters: []
+      responses:
+        201:
+          description: 'Comment created'
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  \"data\": {\n    \"id\": 1,\n    \"body\": \"This is a comment\",\n    \"user_id\": 1,\n    \"incidence_id\": 1,\n    \"parent_id\": null,\n    \"created_at\": \"2026-01-01T00:00:00Z\",\n    \"updated_at\": \"2026-01-01T00:00:00Z\",\n    \"user\": {...}\n  }\n}"
+        401:
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+        422:
+          description: 'Validation error'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The given data was invalid.'
+                  errors:
+                    body:
+                      - 'The body field is required.'
+                    parent_id:
+                      - 'The parent_id must be a valid comment ID.'
+                properties:
+                  message:
+                    type: string
+                    example: 'The given data was invalid.'
+                  errors:
+                    type: object
+                    properties:
+                      body:
+                        type: array
+                        example:
+                          - 'The body field is required.'
+                        items:
+                          type: string
+                      parent_id:
+                        type: array
+                        example:
+                          - 'The parent_id must be a valid comment ID.'
+                        items:
+                          type: string
+      tags:
+        - Comments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+                  description: 'The content of the comment.'
+                  example: '"This is a comment."'
+                parent_id:
+                  type: integer
+                  description: 'optional The ID of the parent comment for replies.'
+                  example: 1
+              required:
+                - body
+    parameters:
+      -
+        in: path
+        name: incidenceId
+        description: 'The ID of the incidence.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  '/api/v1/comments/{comment_id}':
+    get:
+      summary: 'View a single comment.'
+      operationId: viewASingleComment
+      description: 'Get detailed information about a specific comment by its ID, including parent and children.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  \"data\": {\n    \"id\": 1,\n    \"body\": \"This is a comment\",\n    \"user_id\": 1,\n    \"incidence_id\": 1,\n    \"parent_id\": null,\n    \"created_at\": \"2026-01-01T00:00:00Z\",\n    \"updated_at\": \"2026-01-01T00:00:00Z\",\n    \"user\": {...},\n    \"children\": [\n      {\n        \"id\": 2,\n        \"body\": \"This is a reply\",\n        \"user_id\": 2,\n        \"incidence_id\": 1,\n        \"parent_id\": 1,\n        \"created_at\": \"2026-01-01T00:00:00Z\",\n        \"updated_at\": \"2026-01-01T00:00:00Z\",\n        \"user\": {...},\n        \"children\": [...]\n      }\n    ]"
+        404:
+          description: 'Comment not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'No query results for model [App\Models\Comment]'
+                properties:
+                  message:
+                    type: string
+                    example: 'No query results for model [App\Models\Comment]'
+      tags:
+        - Comments
+      security: []
+    put:
+      summary: 'Update a comment.'
+      operationId: updateAComment
+      description: "Update an existing comment by its ID.\nOnly the creator of the comment can update it."
+      parameters: []
+      responses:
+        200:
+          description: 'Comment updated'
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  \"data\": {\n    \"id\": 1,\n    \"body\": \"This is an updated comment\",\n    \"user_id\": 1,\n    \"incidence_id\": 1,\n    \"parent_id\": null,\n    \"created_at\": \"2026-01-01T00:00:00Z\",\n    \"updated_at\": \"2026-01-01T00:00:00Z\",\n    \"user\": {...}\n  }\n}"
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthorized
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+      tags:
+        - Comments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+                  description: 'The updated content of the comment.'
+                  example: '"This is an updated comment."'
+              required:
+                - body
+    delete:
+      summary: 'Delete a comment.'
+      operationId: deleteAComment
+      description: "Delete an existing comment by its ID.\nOnly the creator of the comment or an admin can delete it."
+      parameters: []
+      responses:
+        200:
+          description: 'Comment deleted'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Comment deleted successfully'
+                properties:
+                  message:
+                    type: string
+                    example: 'Comment deleted successfully'
+        401:
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthorized
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        404:
+          description: 'Not Found'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'No query results for model [App\Models\Comment]'
+                properties:
+                  message:
+                    type: string
+                    example: 'No query results for model [App\Models\Comment]'
+      tags:
+        - Comments
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the comment.'
+        example: 1
+        required: true
+        schema:
+          type: integer
   /api/v1/incidences:
     post:
-      summary: null
-      operationId: postApiV1Incidences
-      description: null
+      summary: 'Create a new incidence.'
+      operationId: createANewIncidence
+      description: "Create a new incidence with the provided details.\nThe authenticated user will be set as the creator of the incidence (user_id)."
       parameters: []
-      responses: {  }
+      responses:
+        201:
+          description: 'Incidence created'
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"title\": \"Server Down\",\n      \"description\": \"Main server not responding\",\n      \"status\": \"open\",\n      \"priority\": \"critical\",\n      \"user_id\": 1,\n      \"assigned_to\": 2,\n      \"created_at\": \"2026-01-01T00:00:00Z\",\n      \"updated_at\": \"2026-01-01T00:00:00Z\",\n      \"user\": {...},\n      \"assigned_user\": {...},\n      \"tags\": [...]\n    }\n  ]\n}"
+        401:
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+        422:
+          description: 'Validation error'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: 'The given data was invalid.'
+                    errors:
+                      type: object
+                      properties:
+                        title:
+                          type: array
+                          example:
+                            - 'The title field is required.'
+                          items:
+                            type: string
+                        description:
+                          type: array
+                          example:
+                            - 'The description field is required.'
+                          items:
+                            type: string
+                example:
+                  -
+                    message: 'The given data was invalid.'
+                    errors:
+                      title:
+                        - 'The title field is required.'
+                      description:
+                        - 'The description field is required.'
       tags:
-        - Endpoints
-      security: []
+        - Incidences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: 'The title of the incidence.'
+                  example: '"Server Down"'
+                description:
+                  type: string
+                  description: 'A detailed description of the incidence.'
+                  example: '"The main server is not responding since 3 PM."'
+                status:
+                  type: string
+                  description: 'with the status of the incidence. Allowed values: open, in_progress, closed. Default is "open".'
+                  example: architecto
+                priority:
+                  type: string
+                  description: 'with the priority level of the incidence. Allowed values: low, medium, high. Default is "medium".'
+                  example: architecto
+                assigned_to:
+                  type: integer
+                  description: 'ID of the user assigned to handle this incidence.'
+                  example: 2
+                tags:
+                  type: string
+                  description: 'A comma-separated list of tags to associate with the incidence.'
+                  example: '"server, urgent, backend"'
+              required:
+                - title
+                - description
     get:
-      summary: null
-      operationId: getApiV1Incidences
-      description: null
-      parameters: []
-      responses: {  }
+      summary: 'List all incidences.'
+      operationId: listAllIncidences
+      description: 'Retrieve all incidences with optional filters.'
+      parameters:
+        -
+          in: query
+          name: status
+          description: 'Filter by status (open, in_progress, closed).'
+          example: architecto
+          required: false
+          schema:
+            type: string
+            description: 'Filter by status (open, in_progress, closed).'
+            example: architecto
+        -
+          in: query
+          name: priority
+          description: 'Filter by priority (low, medium, high).'
+          example: architecto
+          required: false
+          schema:
+            type: string
+            description: 'Filter by priority (low, medium, high).'
+            example: architecto
+        -
+          in: query
+          name: tags
+          description: 'Filter by comma-separated list of tag IDs.'
+          example: '1, 2, 3'
+          required: false
+          schema:
+            type: string
+            description: 'Filter by comma-separated list of tag IDs.'
+            example: '1, 2, 3'
+        -
+          in: query
+          name: search
+          description: 'Search by title or description. Examplo: server'
+          example: architecto
+          required: false
+          schema:
+            type: string
+            description: 'Search by title or description. Examplo: server'
+            example: architecto
+      responses:
+        200:
+          description: 'Incidences retrieved'
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"title\": \"Server Down\",\n      \"description\": \"Main server not responding\",\n      \"status\": \"open\",\n      \"priority\": \"critical\",\n      \"user_id\": 1,\n      \"assigned_to\": 2,\n      \"created_at\": \"2026-01-01T00:00:00Z\",\n      \"updated_at\": \"2026-01-01T00:00:00Z\",\n      \"user\": {...},\n      \"assigned_user\": {...},\n      \"tags\": [...]\n    }\n  ]\n}"
       tags:
-        - Endpoints
+        - Incidences
       security: []
   '/api/v1/incidences/{incidence_id}':
     put:
-      summary: null
-      operationId: putApiV1IncidencesIncidence_id
-      description: null
+      summary: 'Update an incidence.'
+      operationId: updateAnIncidence
+      description: "Update an existing incidence by its ID.\nOnly the creator of the incidence or an admin can update it."
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: 'Incidence updated'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    -
+                      id: 1
+                      title: 'Server Down - Updated'
+                      description: 'Main server not responding - Updated'
+                      status: in_progress
+                      priority: high
+                      user_id: 1
+                      assigned_to: 2
+                      created_at: '2026-01-01T00:00:00Z'
+                      updated_at: '2026-01-01T01:00:00Z'
+                properties:
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        title: 'Server Down - Updated'
+                        description: 'Main server not responding - Updated'
+                        status: in_progress
+                        priority: high
+                        user_id: 1
+                        assigned_to: 2
+                        created_at: '2026-01-01T00:00:00Z'
+                        updated_at: '2026-01-01T01:00:00Z'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        title:
+                          type: string
+                          example: 'Server Down - Updated'
+                        description:
+                          type: string
+                          example: 'Main server not responding - Updated'
+                        status:
+                          type: string
+                          example: in_progress
+                        priority:
+                          type: string
+                          example: high
+                        user_id:
+                          type: integer
+                          example: 1
+                        assigned_to:
+                          type: integer
+                          example: 2
+                        created_at:
+                          type: string
+                          example: '2026-01-01T00:00:00Z'
+                        updated_at:
+                          type: string
+                          example: '2026-01-01T01:00:00Z'
+        400:
+          description: 'Invalid request data'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Invalid request data. No query results for model [App\Models\Incidence].'
+                properties:
+                  message:
+                    type: string
+                    example: 'Invalid request data. No query results for model [App\Models\Incidence].'
+        401:
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthorized
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
       tags:
-        - Endpoints
-      security: []
+        - Incidences
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: 'The title of the incidence.'
+                  example: '"Server Down - Updated"'
+                description:
+                  type: string
+                  description: 'The description of the incidence.'
+                  example: '"Main server not responding - Updated"'
+                status:
+                  type: string
+                  description: 'The status of the incidence.'
+                  example: '"in_progress"'
+                priority:
+                  type: string
+                  description: 'The priority of the incidence.'
+                  example: '"high"'
+                assigned_to:
+                  type: integer
+                  description: 'The ID of the user assigned to handle this incidence.'
+                  example: 2
+                tags:
+                  type: string
+                  description: 'A comma-separated list of tags to associate with the incidence.'
+                  example: '"server, urgent, backend"'
     delete:
-      summary: null
-      operationId: deleteApiV1IncidencesIncidence_id
-      description: null
+      summary: 'Delete an incidence.'
+      operationId: deleteAnIncidence
+      description: "Delete an existing incidence by its ID.\nOnly the creator of the incidence or an admin can delete it."
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: 'Incidence deleted'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Incidence deleted successfully'
+                properties:
+                  message:
+                    type: string
+                    example: 'Incidence deleted successfully'
+        401:
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+        403:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthorized
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
       tags:
-        - Endpoints
-      security: []
+        - Incidences
     get:
-      summary: null
-      operationId: getApiV1IncidencesIncidence_id
-      description: null
+      summary: 'View a single incidence.'
+      operationId: viewASingleIncidence
+      description: 'Get detailed information about a specific incidence by its ID.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: 'Incidence retrieved'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    -
+                      id: 1
+                      title: 'Server Down'
+                      description: 'Main server not responding'
+                      status: open
+                      priority: critical
+                      user_id: 1
+                      assigned_to: 2
+                      created_at: '2026-01-01T00:00:00Z'
+                      updated_at: '2026-01-01T00:00:00Z'
+                properties:
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        title: 'Server Down'
+                        description: 'Main server not responding'
+                        status: open
+                        priority: critical
+                        user_id: 1
+                        assigned_to: 2
+                        created_at: '2026-01-01T00:00:00Z'
+                        updated_at: '2026-01-01T00:00:00Z'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        title:
+                          type: string
+                          example: 'Server Down'
+                        description:
+                          type: string
+                          example: 'Main server not responding'
+                        status:
+                          type: string
+                          example: open
+                        priority:
+                          type: string
+                          example: critical
+                        user_id:
+                          type: integer
+                          example: 1
+                        assigned_to:
+                          type: integer
+                          example: 2
+                        created_at:
+                          type: string
+                          example: '2026-01-01T00:00:00Z'
+                        updated_at:
+                          type: string
+                          example: '2026-01-01T00:00:00Z'
       tags:
-        - Endpoints
+        - Incidences
       security: []
-  '/api/v1/incidences/{incidenceId}/comments':
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the incidence to update.'
+        example: 1
+        required: true
+        schema:
+          type: integer
+  /api/v1/my-incidences:
     get:
-      summary: null
-      operationId: getApiV1IncidencesIncidenceIdComments
-      description: null
-      parameters: []
-      responses: {  }
+      summary: 'List my incidences.'
+      operationId: listMyIncidences
+      description: 'Retrieve incidences created by the authenticated user.'
+      parameters:
+        -
+          in: query
+          name: status
+          description: 'Filter by status (open, in_progress, closed).'
+          example: architecto
+          required: false
+          schema:
+            type: string
+            description: 'Filter by status (open, in_progress, closed).'
+            example: architecto
+        -
+          in: query
+          name: priority
+          description: 'Filter by priority (low, medium, high).'
+          example: architecto
+          required: false
+          schema:
+            type: string
+            description: 'Filter by priority (low, medium, high).'
+            example: architecto
+        -
+          in: query
+          name: search
+          description: 'Search by title or description.'
+          example: architecto
+          required: false
+          schema:
+            type: string
+            description: 'Search by title or description.'
+            example: architecto
+      responses:
+        200:
+          description: 'Incidences retrieved'
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  \"data\": [...],\n  \"meta\": {...}\n}"
+        401:
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
       tags:
-        - Endpoints
-      security: []
-    post:
-      summary: null
-      operationId: postApiV1IncidencesIncidenceIdComments
-      description: null
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      security: []
-  '/api/v1/comments/{comment_id}':
-    get:
-      summary: null
-      operationId: getApiV1CommentsComment_id
-      description: null
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      security: []
-    put:
-      summary: null
-      operationId: putApiV1CommentsComment_id
-      description: null
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      security: []
-    delete:
-      summary: null
-      operationId: deleteApiV1CommentsComment_id
-      description: null
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      security: []
-  /api/v1/tags:
-    get:
-      summary: null
-      operationId: getApiV1Tags
-      description: null
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      security: []
-    post:
-      summary: null
-      operationId: postApiV1Tags
-      description: null
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      security: []
-  '/api/v1/tags/{tag_id}':
-    get:
-      summary: null
-      operationId: getApiV1TagsTag_id
-      description: null
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      security: []
-    put:
-      summary: null
-      operationId: putApiV1TagsTag_id
-      description: null
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      security: []
-    delete:
-      summary: null
-      operationId: deleteApiV1TagsTag_id
-      description: null
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      security: []
+        - Incidences
   /api/v1/metrics:
     get:
-      summary: null
-      operationId: getApiV1Metrics
-      description: null
+      summary: 'List Metrics.'
+      operationId: listMetrics
+      description: 'Retrieve aggregated metrics and statistics about incidences.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: 'Metrics retrieved'
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  \"data\": {\n    \"by_status\": {\n      \"open\": [\n        {\"id\": 1, \"title\": \"Server Down\", \"status\": \"open\", \"priority\": \"critical\", ...}\n      ],\n      \"in_progress\": [],\n      \"closed\": []\n    },\n    \"by_priority\": {\n      \"low\": [],\n      \"medium\": [],\n      \"high\": [...],\n      \"critical\": [...]\n    }\n  }\n}"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
       tags:
-        - Endpoints
+        - Metrics
+  /api/v1/tags:
+    get:
+      summary: 'List all tags.'
+      operationId: listAllTags
+      description: 'Retrieve all tags with their associated users and incidences.'
+      parameters: []
+      responses:
+        200:
+          description: 'Tags retrieved'
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"name\": \"tag1\",\n      \"user_id\": 1,\n      \"created_at\": \"2026-01-01T00:00:00Z\",\n      \"updated_at\": \"2026-01-01T00:00:00Z\",\n      \"user\": {...},\n      \"incidences\": [...]\n    }\n  ]\n}"
+      tags:
+        - Tags
       security: []
+    post:
+      summary: 'Create a new tag.'
+      operationId: createANewTag
+      description: "Create a new tag or reuse an existing one with the same name (case-insensitive).\nUses firstOrCreate to ensure atomicity and prevent duplicates.\nTag names are stored in lowercase to enforce case-insensitivity."
+      parameters: []
+      responses:
+        201:
+          description: 'Tag created'
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  \"data\": {\n    \"id\": 1,\n    \"name\": \"server\",\n    \"user_id\": 1,\n    \"created_at\": \"2026-01-01T00:00:00Z\",\n    \"updated_at\": \"2026-01-01T00:00:00Z\",\n    \"user\": {...},\n    \"incidences\": [...]\n  }\n}"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+        422:
+          description: 'Validation error'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'The given data was invalid.'
+                  errors:
+                    name:
+                      - 'The name field is required.'
+                properties:
+                  message:
+                    type: string
+                    example: 'The given data was invalid.'
+                  errors:
+                    type: object
+                    properties:
+                      name:
+                        type: array
+                        example:
+                          - 'The name field is required.'
+                        items:
+                          type: string
+      tags:
+        - Tags
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'The name of the tag (stored in lowercase).'
+                  example: Server
+              required:
+                - name
+  '/api/v1/tags/{tag_id}':
+    get:
+      summary: 'View a single tag.'
+      operationId: viewASingleTag
+      description: 'Get detailed information about a specific tag by its ID, including the user who created it and the incidences associated with it.'
+      parameters: []
+      responses:
+        200:
+          description: 'Tag retrieved'
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  \"data\": {\n    \"id\": 1,\n    \"name\": \"server\",\n    \"user_id\": 1,\n    \"created_at\": \"2026-01-01T00:00:00Z\",\n    \"updated_at\": \"2026-01-01T00:00:00Z\",\n    \"user\": {...},\n    \"incidences\": [...]\n  }\n}"
+      tags:
+        - Tags
+      security: []
+    put:
+      summary: 'Update a tag.'
+      operationId: updateATag
+      description: "Update the details of an existing tag.\nOnly the creator of the tag or an admin can update it."
+      parameters: []
+      responses:
+        200:
+          description: 'Tag updated'
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  \"data\": {\n    \"id\": 1,\n    \"name\": \"server\",\n    \"user_id\": 1,\n    \"created_at\": \"2026-01-01T00:00:00Z\",\n    \"updated_at\": \"2026-01-01T00:00:00Z\",\n    \"user\": {...},\n    \"incidences\": [...]\n  }\n}"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthorized
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        404:
+          description: 'Not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'No query results for model [App\Models\Tag]'
+                properties:
+                  message:
+                    type: string
+                    example: 'No query results for model [App\Models\Tag]'
+      tags:
+        - Tags
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'The name of the tag (stored in lowercase).'
+                  example: Server
+              required:
+                - name
+    delete:
+      summary: 'Delete a tag.'
+      operationId: deleteATag
+      description: "Delete an existing tag.\nOnly the creator of the tag or an admin can delete it.\nNote: This removes the tag from all associated incidences (pivot table)."
+      parameters: []
+      responses:
+        200:
+          description: 'Tag deleted'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Tag deleted successfully'
+                properties:
+                  message:
+                    type: string
+                    example: 'Tag deleted successfully'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthorized
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        404:
+          description: 'Not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'No query results for model [App\Models\Tag]'
+                properties:
+                  message:
+                    type: string
+                    example: 'No query results for model [App\Models\Tag]'
+      tags:
+        - Tags
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the tag.'
+        example: 1
+        required: true
+        schema:
+          type: integer
   /api/v1/users:
     get:
-      summary: null
-      operationId: getApiV1Users
-      description: null
+      summary: 'List all users.'
+      operationId: listAllUsers
+      description: 'Retrieve a list of all users.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: 'Users retrieved'
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"name\": \"User Admin\",\n      \"email\": \"admin@telsur.cl\",\n      \"is_admin\": true,\n      \"created_at\": \"2026-01-01T00:00:00Z\",\n      \"updated_at\": \"2026-01-01T00:00:00Z\"\n    },\n    {\n      \"id\": 2,\n      \"name\": \"User no Admin\",\n      \"email\": \"noadmin@telsur.cl\",\n      \"is_admin\": false,\n      ...\n    }\n  ]\n}"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Forbidden. Admin access required.'
+                properties:
+                  message:
+                    type: string
+                    example: 'Forbidden. Admin access required.'
       tags:
-        - Endpoints
-      security: []
+        - Users
   '/api/v1/users/{id}':
     get:
-      summary: null
-      operationId: getApiV1UsersId
-      description: null
+      summary: 'View a single user.'
+      operationId: viewASingleUser
+      description: 'Get detailed information about a specific user by their ID.'
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: 'User retrieved'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 1
+                    name: 'User Admin'
+                    email: admin@telsur.cl
+                    is_admin: true
+                    created_at: '2026-01-01T00:00:00Z'
+                    updated_at: '2026-01-01T00:00:00Z'
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      name:
+                        type: string
+                        example: 'User Admin'
+                      email:
+                        type: string
+                        example: admin@telsur.cl
+                      is_admin:
+                        type: boolean
+                        example: true
+                      created_at:
+                        type: string
+                        example: '2026-01-01T00:00:00Z'
+                      updated_at:
+                        type: string
+                        example: '2026-01-01T00:00:00Z'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Forbidden. Admin access required.'
+                properties:
+                  message:
+                    type: string
+                    example: 'Forbidden. Admin access required.'
+        404:
+          description: 'User not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'User not found.'
+                properties:
+                  message:
+                    type: string
+                    example: 'User not found.'
       tags:
-        - Endpoints
-      security: []
+        - Users
     delete:
-      summary: null
-      operationId: deleteApiV1UsersId
-      description: null
+      summary: 'Delete a user.'
+      operationId: deleteAUser
+      description: "Remove a specific user from the system.\nOnly an admin can delete a user, and users cannot delete themselves."
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: 'User deleted'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'User deleted successfully.'
+                properties:
+                  message:
+                    type: string
+                    example: 'User deleted successfully.'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Forbidden. Admin access required.'
+                properties:
+                  message:
+                    type: string
+                    example: 'Forbidden. Admin access required.'
+        404:
+          description: 'User not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'User not found.'
+                properties:
+                  message:
+                    type: string
+                    example: 'User not found.'
       tags:
-        - Endpoints
-      security: []
+        - Users
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the user.'
+        example: 1
+        required: true
+        schema:
+          type: integer
   '/api/v1/users/{id}/incidences':
     get:
-      summary: null
-      operationId: getApiV1UsersIdIncidences
-      description: null
+      summary: "Get user's incidences."
+      operationId: getUsersIncidences
+      description: "Retrieve all incidences created by or assigned to a specific user by their ID.\n- The creartor of the incidence is determined by the `user_id` field.\n- The assigned user is determined by the `assigned_to` field."
       parameters: []
-      responses: {  }
+      responses:
+        200:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  \"data\": [\n    {\n      \"id\": 1,\n      \"title\": \"Server Down\",\n      \"user_id\": 2,\n      \"assigned_to\": 2,\n      ...\n    },\n    {\n      \"id\": 3,\n      \"title\": \"Database issue\",\n      \"user_id\": 1,\n      \"assigned_to\": 2,\n      ...\n    }\n  ]\n}"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Forbidden. Admin access required.'
+                properties:
+                  message:
+                    type: string
+                    example: 'Forbidden. Admin access required.'
+        404:
+          description: 'User not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'No query results for model [App\Models\User].'
+                properties:
+                  message:
+                    type: string
+                    example: 'No query results for model [App\Models\User].'
       tags:
-        - Endpoints
-      security: []
+        - Users
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the user.'
+        example: 2
+        required: true
+        schema:
+          type: integer

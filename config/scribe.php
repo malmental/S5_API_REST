@@ -107,13 +107,13 @@ return [
     ],
 
     'strategies' => [
-        'metadata' => [],
-        'headers' => [],
-        'urlParameters' => [],
-        'queryParameters' => [],
-        'bodyParameters' => [],
-        'responses' => [],
-        'responseFields' => [],
+        'metadata' => ['Knuckles\Scribe\Extracting\Strategies\Metadata\GetFromDocBlocks'],
+        'headers' => ['Knuckles\Scribe\Extracting\Strategies\Headers\GetFromHeaderTag'],
+        'urlParameters' => ['Knuckles\Scribe\Extracting\Strategies\UrlParameters\GetFromUrlParamTag'],
+        'queryParameters' => ['Knuckles\Scribe\Extracting\Strategies\QueryParameters\GetFromQueryParamTag'],
+        'bodyParameters' => ['Knuckles\Scribe\Extracting\Strategies\BodyParameters\GetFromBodyParamTag'],
+        'responses' => ['Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseTag'],
+        'responseFields' => ['Knuckles\Scribe\Extracting\Strategies\ResponseFields\GetFromResponseFieldTag'],
     ],
 
     'database_connections_to_transact' => [config('database.default')],
