@@ -36,5 +36,5 @@ php artisan storage:link
 # Start PHP-FPM
 php-fpm -D
 
-# Start Nginx
-nginx -g "daemon off;"
+# Start Nginx with custom config
+nginx -c /docker/nginx.conf -g "daemon off;"
