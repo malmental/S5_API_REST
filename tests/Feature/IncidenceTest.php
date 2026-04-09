@@ -163,4 +163,87 @@ class IncidenceTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    public function test_incidence_resource_structure(): void
+    {
+        $incidence = Incidence::factory()->create();
+        $resource = new \App\Http\Resources\IncidenceResource($incidence);
+        $data = $resource->toArray(new \Illuminate\Http\Request);
+    
+        $this->assertArrayHasKey('id', $data);
+        $this->assertArrayHasKey('title', $data);
+        $this->assertArrayHasKey('status', $data);
+        $this->assertArrayHasKey('priority', $data);
+        $this->assertArrayHasKey('created_at', $data);
+        $this->assertArrayHasKey('updated_at', $data);
+    }
+
+    public function test_create_incidence_validates_title_required(): void
+    {
+        Passport::actingAs($this->user);
+
+        $response = $this->postJson('/api/v1/incidences', [
+            'description' => 'Missing title',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('title');
+    }
+
+    public function test_create_incidence_validates_status_values(): void
+    {
+        Passport::actingAs($this->user);
+
+        $response = $this->postJson('/api/v1/incidences', [
+            'title' => 'Invalid Status',
+            'status' => 'invalid_status',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('status');
+    }
+
+    public function test_create_incidence_validates_priority_values(): void
+    {
+        Passport::actingAs($this->user);
+
+        $response = $this->postJson('/api/v1/incidences', [
+            'title' => 'Invalid Priority',
+            'priority' => 'invalid_priority',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('priority');
+    }
+
+    public function test_create_incidence_accepts_valid_assigned_user(): void
+    {
+        Passport::actingAs($this->user);
+        
+        $otherUser = User::factory()->create();
+        
+        $response = $this->postJson('/api/v1/incidences', [
+            'title' => 'Test',
+            'assigned_to' => $otherUser->id,
+        ]);
+    
+        $response->assertStatus(201);
+    
+        $this->assertDatabaseHas('incidences', [
+            'title' => 'Test',
+            'assigned_to' => $otherUser->id,
+    ]);
+}
+
+    public function test_update_incidence_validates_status_values(): void
+    {
+        Passport::actingAs($this->user);
+
+        $response = $this->putJson("/api/v1/incidences/{$this->incidence->id}", [
+            'status' => 'invalid_status',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('status');
+    }
 }

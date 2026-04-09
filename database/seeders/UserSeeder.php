@@ -9,18 +9,22 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create([
-            'name' => 'Usuario Admin',
-            'email' => 'admin@telsur.cl',
-            'password' => bcrypt('password'),
-            'is_admin' => true,
-        ]);
+        User::firstOrCreate(
+            ['email' => 'admin@telsur.cl'],
+            [
+                'name' => 'Usuario Admin',
+                'password' => bcrypt('password'),
+                'is_admin' => true,
+            ]
+        );
 
-        User::create([
-            'name' => 'Usuario no admin',
-            'email' => 'noadmin@telsur.cl',
-            'password' => bcrypt('password'),
-            'is_admin' => false,
-        ]);
+        User::firstOrCreate(
+            ['email' => 'noadmin@telsur.cl'],
+            [
+                'name' => 'Usuario no admin',
+                'password' => bcrypt('password'),
+                'is_admin' => false,
+            ]
+        );
     }
 }

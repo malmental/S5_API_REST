@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>INCIDENsly 𝒘ebApp API Documentation</title>
 
+<<<<<<< HEAD
     <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ asset("/vendor/scribe/css/theme-default.style.css") }}" media="screen">
@@ -4625,5 +4626,13 @@ You can check the Dev Tools console for debugging information.</code></pre>
                             </div>
             </div>
 </div>
+=======
+<script
+    id="api-reference"
+    data-url="/docs.openapi"
+    spec-url="https://incidenslydocs.up.railway.app/docs.openapi">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+>>>>>>> origin/develop
 </body>
 </html>

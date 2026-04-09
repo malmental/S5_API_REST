@@ -1,0 +1,252 @@
+openapi: 3.0.3
+info:
+  title: 'INCIDENsly 𝒘ebApp API Documentation'
+  description: "    \nDocumentation for the INCIDENsly 𝒘ebApp API.\n\nThis API provides endpoints for managing incidents, comments, tags, and user administration.\nAuthentication is handled via OAuth2 (Bearer token). Use the /login endpoint to obtain your token.\nAll responses are returned in JSON format.\n\n## Quick Start\n\n1. Register a new user via the /register endpoint to create an account and obtain an API token.\n2. Use the /login endpoint to authenticate and receive an access token.\n3. Include the token in the Authorization header (e.g. `Authorization: Bearer {YOUR_TOKEN}`) for all subsequent requests to protected endpoints.\n4. Explore the available endpoints for managing incidences, comments, tags, and users.\n5. Refer to the endpoint documentation for details on request parameters, response formats, and example requests and responses.\n\n## Roles\n\n- `user` — puede gestionar sus propias incidencias, comentarios y tags.\n- `admin` — tiene acceso adicional a la gestión de usuarios."
+  version: 1.0.0
+servers:
+  -
+    url: 'http://127.0.0.1:8000'
+tags:
+  -
+    name: Endpoints
+    description: ''
+components:
+  securitySchemes:
+    default:
+      type: http
+      scheme: bearer
+      description: 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.'
+security:
+  -
+    default: []
+paths:
+  /api/v1/register:
+    post:
+      summary: null
+      operationId: postApiV1Register
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  /api/v1/login:
+    post:
+      summary: null
+      operationId: postApiV1Login
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  /api/v1/logout:
+    post:
+      summary: null
+      operationId: postApiV1Logout
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  /api/v1/me:
+    get:
+      summary: null
+      operationId: getApiV1Me
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  /api/v1/incidences:
+    post:
+      summary: null
+      operationId: postApiV1Incidences
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+    get:
+      summary: null
+      operationId: getApiV1Incidences
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  '/api/v1/incidences/{incidence_id}':
+    put:
+      summary: null
+      operationId: putApiV1IncidencesIncidence_id
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+    delete:
+      summary: null
+      operationId: deleteApiV1IncidencesIncidence_id
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+    get:
+      summary: null
+      operationId: getApiV1IncidencesIncidence_id
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  '/api/v1/incidences/{incidenceId}/comments':
+    get:
+      summary: null
+      operationId: getApiV1IncidencesIncidenceIdComments
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+    post:
+      summary: null
+      operationId: postApiV1IncidencesIncidenceIdComments
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  '/api/v1/comments/{comment_id}':
+    get:
+      summary: null
+      operationId: getApiV1CommentsComment_id
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+    put:
+      summary: null
+      operationId: putApiV1CommentsComment_id
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+    delete:
+      summary: null
+      operationId: deleteApiV1CommentsComment_id
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  /api/v1/tags:
+    get:
+      summary: null
+      operationId: getApiV1Tags
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+    post:
+      summary: null
+      operationId: postApiV1Tags
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  '/api/v1/tags/{tag_id}':
+    get:
+      summary: null
+      operationId: getApiV1TagsTag_id
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+    put:
+      summary: null
+      operationId: putApiV1TagsTag_id
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+    delete:
+      summary: null
+      operationId: deleteApiV1TagsTag_id
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  /api/v1/metrics:
+    get:
+      summary: null
+      operationId: getApiV1Metrics
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  /api/v1/users:
+    get:
+      summary: null
+      operationId: getApiV1Users
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  '/api/v1/users/{id}':
+    get:
+      summary: null
+      operationId: getApiV1UsersId
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+    delete:
+      summary: null
+      operationId: deleteApiV1UsersId
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  '/api/v1/users/{id}/incidences':
+    get:
+      summary: null
+      operationId: getApiV1UsersIdIncidences
+      description: null
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
