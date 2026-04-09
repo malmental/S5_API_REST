@@ -228,31 +228,13 @@ return [
     // Use configureStrategy() to specify settings for a strategy in the list.
     // Use removeStrategies() to remove an included strategy.
     'strategies' => [
-        'metadata' => [
-            \Knuckles\Scribe\Config\Defaults::METADATA_STRATEGIES,
-        ],
-        'headers' => [
-            \Knuckles\Scribe\Config\Defaults::HEADERS_STRATEGIES,
-            Strategies\StaticData::withSettings(data: [
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ]),
-        ],
-        'urlParameters' => [
-            \Knuckles\Scribe\Config\Defaults::URL_PARAMETERS_STRATEGIES,
-        ],
-        'queryParameters' => [
-            \Knuckles\Scribe\Config\Defaults::QUERY_PARAMETERS_STRATEGIES,
-        ],
-        'bodyParameters' => [
-            \Knuckles\Scribe\Config\Defaults::BODY_PARAMETERS_STRATEGIES,
-        ],
-        'responses' => [
-            \Knuckles\Scribe\Config\Defaults::RESPONSES_STRATEGIES,
-        ],
-        'responseFields' => [
-            \Knuckles\Scribe\Config\Defaults::RESPONSE_FIELDS_STRATEGIES,
-        ],
+        'metadata' => [],
+        'headers' => [],
+        'urlParameters' => [],
+        'queryParameters' => [],
+        'bodyParameters' => [],
+        'responses' => [],
+        'responseFields' => [],
     ],
 
     // For response calls, API resource responses and transformer responses,
