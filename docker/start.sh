@@ -24,11 +24,11 @@ QUEUE_CONNECTION=sync
 SESSION_DRIVER=file
 EOF
 
-# Generate Passport encryption keys only (tables already exist)
-php artisan passport:keys --force
-
-# Link storage
+# Link storage first (Railway has ephemeral filesystem)
 php artisan storage:link
+
+# Generate Passport encryption keys
+php artisan passport:keys --force
 
 # Start PHP-FPM
 php-fpm -D
