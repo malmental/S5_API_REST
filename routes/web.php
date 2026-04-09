@@ -9,6 +9,7 @@ Route::get('/', function () {
 Route::get('/docs', function () {
     $html = file_get_contents(public_path('docs/index.html'));
     $html = str_replace('../docs/', './', $html);
+    $html = str_replace('..\/docs\/', './', $html);
     return response($html)->header('Content-Type', 'text/html');
 });
 
