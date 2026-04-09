@@ -5,7 +5,7 @@ cat > /var/www/.env << EOF
 APP_NAME=INCIDENsly
 APP_ENV=production
 APP_KEY=${APP_KEY}
-APP_DEBUG=true
+APP_DEBUG=false
 APP_URL=${APP_URL}
 
 LOG_CHANNEL=stderr
