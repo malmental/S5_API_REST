@@ -60,16 +60,20 @@ class CommentController extends Controller
      */
     public function index(string $incidenceId): JsonResponse
     {
+        $perPage = min($request->per_page ?? 15, 100);
         $comments = Comment::with(['user', 'children.user'])
             ->where('incidence_id', $incidenceId)
             ->whereNull('parent_id')
-            ->with('children', function ($query) {
-                $query->with('children.user');
-            })
-            ->get();
+            ->paginate($perPage);
 
         return response()->json([
             'data' => CommentResource::collection($comments),
+            'meta' => [
+                'current_page' => $comments->currentPage(),
+                'last_page' => $comments->lastPage(),
+                'per_page' => $comments->perPage(),
+                'total' => $comments->total(),
+            ],
         ]);
     }
 
