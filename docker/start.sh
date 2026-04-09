@@ -5,20 +5,8 @@ if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
 fi
 
-# Wait for MySQL to be ready before running migrations
-echo "Waiting for MySQL to be ready..."
-until php artisan migrate --force 2>/dev/null; do
-    echo "MySQL not ready, waiting..."
-    sleep 3
-done
-
-echo "MySQL is ready!"
-
-# Install Passport (only if migrations succeeded)
-php artisan passport:install --force
-
-# Start PHP-FPM 
+# Start PHP-FPM immediately (don't wait for MySQL)
 php-fpm -D
 
-# Start Nginx
+# Start Nginx immediately (don't wait for MySQL)
 nginx -g "daemon off;"
