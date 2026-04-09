@@ -55,29 +55,7 @@ endpoints:
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
-<<<<<<< HEAD
-    responses:
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
-          }
-        headers: []
-        description: 'Login successful'
-      -
-        custom: []
-        status: 401
-        content: |-
-          {
-            "message": "Invalid credentials"
-          }
-        headers: []
-        description: 'Invalid credentials'
-=======
     responses: []
->>>>>>> origin/develop
     responseFields: []
     auth: []
     controller: null
@@ -204,6 +182,35 @@ endpoints:
     httpMethods:
       - DELETE
     uri: 'api/v1/incidences/{incidence_id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: null
+      subgroup: null
+      subgroupDescription: null
+      title: null
+      description: null
+      authenticated: false
+      deprecated: false
+    headers: []
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/my-incidences
     metadata:
       custom: []
       groupName: Endpoints
