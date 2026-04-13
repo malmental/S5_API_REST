@@ -3,12 +3,19 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Database\Seeders\PassportSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(PassportSeeder::class);
+    }
 
     public function test_user_can_register_with_valid_data(): void
     {

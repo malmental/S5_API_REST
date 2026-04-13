@@ -42,14 +42,14 @@ class TagController extends Controller
     {
         $perPage = min($request->per_page ?? 15, 100);
         $tags = Tag::with(['user', 'incidences'])->paginate($perPage);
-        
+
         return response()->json([
             'data' => TagResource::collection($tags),
             'meta' => [
-            'current_page' => $tags->currentPage(),
-            'last_page' => $tags->lastPage(),
-            'per_page' => $tags->perPage(),
-            'total' => $tags->total(),
+                'current_page' => $tags->currentPage(),
+                'last_page' => $tags->lastPage(),
+                'per_page' => $tags->perPage(),
+                'total' => $tags->total(),
             ],
         ]);
     }

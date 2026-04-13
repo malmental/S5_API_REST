@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Laravel\Passport\Passport;
 use Tests\TestCase;
 
@@ -14,7 +13,9 @@ class TagTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected User $admin;
+
     protected Tag $tag;
 
     protected function setUp(): void
@@ -99,18 +100,16 @@ class TagTest extends TestCase
             ->assertJsonValidationErrors(['name']);
     }
 
-
     public function test_create_tag_validates_name_max_length(): void
-
     {
         Passport::actingAs($this->user);
-    
+
         $longName = str_repeat('a', 256);
-    
+
         $response = $this->postJson('/api/v1/tags', [
             'name' => $longName,
         ]);
-    
+
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['name']);
     }
@@ -118,9 +117,9 @@ class TagTest extends TestCase
     public function test_update_tag_validates_name_required(): void
     {
         Passport::actingAs($this->user);
-    
+
         $response = $this->putJson("/api/v1/tags/{$this->tag->id}", []);
-    
+
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['name']);
     }

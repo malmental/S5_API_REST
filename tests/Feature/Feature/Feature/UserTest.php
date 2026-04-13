@@ -19,18 +19,18 @@ class UserTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->admin = User::factory()->create(['is_admin' => true]);
         $this->user = User::factory()->create(['is_admin' => false]);
     }
 
     public function test_admin_can_list_users(): void
     {
-        
+
         Passport::actingAs($this->admin);
-        
+
         $response = $this->getJson('/api/v1/users');
-        
+
         $response->assertStatus(200)
             ->assertJsonStructure(['data']);
     }
@@ -61,9 +61,9 @@ class UserTest extends TestCase
     public function test_admin_can_delete_user(): void
     {
         Passport::actingAs($this->admin);
-        
+
         $response = $this->deleteJson("/api/v1/users/{$this->user->id}");
-        
+
         $response->assertStatus(200)
             ->assertJsonPath('message', 'User deleted successfully.');
         $this->assertDatabaseMissing('users', ['id' => $this->user->id]);
@@ -72,9 +72,9 @@ class UserTest extends TestCase
     public function test_non_admin_cannot_access_users(): void
     {
         Passport::actingAs($this->user);
-    
+
         $response = $this->getJson('/api/v1/users');
-    
+
         $response->assertStatus(403);
     }
 
