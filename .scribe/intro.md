@@ -17,8 +17,8 @@ All responses are returned in JSON format.
 
 ## Roles
 
-- `user` — puede gestionar sus propias incidencias, comentarios y tags.
-- `admin` — tiene acceso adicional a la gestión de usuarios.
+- `user` — Can manage their own incidents, comments, and tags.
+- `admin` — has additional access to user management.
 
 <aside>
     <strong>Base URL</strong>: <code>http://127.0.0.1:8000</code>

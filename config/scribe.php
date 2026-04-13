@@ -25,8 +25,8 @@ return [
 
     ## Roles
 
-    - `user` — puede gestionar sus propias incidencias, comentarios y tags.
-    - `admin` — tiene acceso adicional a la gestión de usuarios.
+    - `user` — Can manage their own incidents, comments, and tags.
+    - `admin` — has additional access to user management.
     DESC,
 
     // Text to place in the "Introduction" section, right after the `description`. Markdown and HTML are supported.
@@ -52,7 +52,7 @@ return [
     // Using 'static' type - docs served from public/docs/
     'type' => 'static',
 
-    'theme' => 'default',
+    'theme' => 'elements',
 
     'static' => [
         'output_path' => 'public/docs',
