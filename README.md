@@ -2,23 +2,9 @@
   <img src="docs/images/incidensly_letter.png" alt="INCIDENsly Logo" width="400">
 </p>
 
-<p align="center">
-  <a href="https://laravel.com" target="_blank">
-    <img src="https://img.shields.io/badge/Laravel-12.x-F05340?style=flat&logo=laravel" alt="Laravel">
-  </a>
-  <a href="https://www.php.net" target="_blank">
-    <img src="https://img.shields.io/badge/PHP-8.2+-777BB4?style=flat&logo=php" alt="PHP">
-  </a>
-  <a href="https://www.php-fig.org/psr/psr-12/" target="_blank">
-    <img src="https://img.shields.io/badge/PSR-12-青?style=flat" alt="PSR-12">
-  </a>
-  <a href="https://github.com/orlandorojas/INCIDENsly/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
-  </a>
-</p>
 
-**[➪ Live Demo API Docs](https://incidensly-webapp-production.up.railway.app/docs/)**
 
+**[➪ TRY ME RIGHT ON !](https://incidensly-webapp-production.up.railway.app/docs/)**
 ---
 
 Incident manager system with a complete REST API and automated tests. Built with Laravel 12 and OAuth2 authentication via Passport.
