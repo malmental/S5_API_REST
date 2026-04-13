@@ -9,17 +9,17 @@ class IncidencePolicy
 {
     public function viewAny(User $user): bool
     {
-        return true; 
+        return true;
     }
 
     public function view(User $user, Incidence $incidence): bool
     {
-        return true; 
+        return true;
     }
 
     public function create(User $user): bool
     {
-        return true; 
+        return true;
     }
 
     public function update(User $user, Incidence $incidence): bool

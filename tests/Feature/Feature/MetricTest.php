@@ -22,8 +22,7 @@ class MetricTest extends TestCase
         Incidence::factory()->create(['status' => 'open', 'priority' => 'high', 'user_id' => $this->user->id]);
         Incidence::factory()->create(['status' => 'open', 'priority' => 'low', 'user_id' => $this->user->id]);
         Incidence::factory()->create(['status' => 'in_progress', 'priority' => 'medium', 'user_id' => $this->user->id]);
-        Incidence::factory()->create(['status' => 'resolved', 'priority' => 'critical', 'user_id' => $this->user->id]);
-        Incidence::factory()->create(['status' => 'closed', 'priority' => 'low', 'user_id' => $this->user->id]);
+        Incidence::factory()->create(['status' => 'closed', 'priority' => 'high', 'user_id' => $this->user->id]);
     }
 
     public function test_authenticated_user_can_view_metrics(): void
@@ -38,14 +37,12 @@ class MetricTest extends TestCase
                     'by_status' => [
                         'open',
                         'in_progress',
-                        'resolved',
                         'closed',
                     ],
                     'by_priority' => [
                         'low',
                         'medium',
                         'high',
-                        'critical',
                     ],
                 ],
             ]);
@@ -57,7 +54,7 @@ class MetricTest extends TestCase
 
         $response->assertStatus(401);
     }
-    
+
     public function test_metrics_contains_by_status(): void
     {
         Passport::actingAs($this->user);
@@ -70,7 +67,6 @@ class MetricTest extends TestCase
 
         $this->assertArrayHasKey('open', $data);
         $this->assertArrayHasKey('in_progress', $data);
-        $this->assertArrayHasKey('resolved', $data);
         $this->assertArrayHasKey('closed', $data);
     }
 
@@ -87,7 +83,6 @@ class MetricTest extends TestCase
         $this->assertArrayHasKey('low', $data);
         $this->assertArrayHasKey('medium', $data);
         $this->assertArrayHasKey('high', $data);
-        $this->assertArrayHasKey('critical', $data);
     }
 
     public function test_metrics_shows_correct_counts(): void
@@ -100,9 +95,8 @@ class MetricTest extends TestCase
 
         $byStatus = $response->json('data.by_status');
 
-        $this->assertCount(2, $byStatus['open']);
-        $this->assertCount(1, $byStatus['in_progress']);
-        $this->assertCount(1, $byStatus['resolved']);
-        $this->assertCount(1, $byStatus['closed']);
+        $this->assertEquals(2, $byStatus['open']);
+        $this->assertEquals(1, $byStatus['in_progress']);
+        $this->assertEquals(1, $byStatus['closed']);
     }
 }

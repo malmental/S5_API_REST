@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Comment;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Incidence;
 use Illuminate\Database\Seeder;
 
 class CommentSeeder extends Seeder
@@ -13,10 +13,10 @@ class CommentSeeder extends Seeder
      */
     public function run(): void
     {
-        $incidence1 = \App\Models\Incidence::first();
-        $incidence2 = \App\Models\Incidence::skip(1)->first();
+        $incidence1 = Incidence::first();
+        $incidence2 = Incidence::skip(1)->first();
 
-        if (!$incidence1 || !$incidence2) {
+        if (! $incidence1 || ! $incidence2) {
             return;
         }
 

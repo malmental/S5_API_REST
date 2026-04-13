@@ -16,8 +16,9 @@ class UserController extends Controller
     /**
      * List all users.
      * Retrieve a list of all users.
-     * 
+     *
      * @authenticated
+     *
      * @response 200 scenario="Users retrieved" {
      *   "data": [
      *     {
@@ -56,10 +57,11 @@ class UserController extends Controller
     /**
      * View a single user.
      * Get detailed information about a specific user by their ID.
-     * 
+     *
      * @authenticated
+     *
      * @urlParam id integer required The ID of the user. Example: 1
-     * 
+     *
      * @response 200 scenario="User retrieved" {
      *   "data": {
      *     "id": 1,
@@ -94,10 +96,11 @@ class UserController extends Controller
      * Retrieve all incidences created by or assigned to a specific user by their ID.
      * - The creartor of the incidence is determined by the `user_id` field.
      * - The assigned user is determined by the `assigned_to` field.
-     * 
+     *
      * @authenticated
+     *
      * @urlParam id integer required The ID of the user. Example: 2
-     * 
+     *
      * @response 200 {
      *   "data": [
      *     {
@@ -142,10 +145,11 @@ class UserController extends Controller
      * Delete a user.
      * Remove a specific user from the system.
      * Only an admin can delete a user, and users cannot delete themselves.
-     * 
+     *
      * @authenticated
+     *
      * @urlParam id integer required The ID of the user. Example: 1
-     * 
+     *
      * @response 200 scenario="User deleted" {
      *   "message": "User deleted successfully."
      * }
@@ -161,17 +165,17 @@ class UserController extends Controller
     public function destroy(int $id): JsonResponse
     {
         if (auth()->id() === $id) {
-        return response()->json([
+            return response()->json([
                 'message' => 'Cannot delete yourself.',
             ], 403);
         }
-    
+
         $user = User::findOrFail($id);
-    
+
         $user->delete();
-    
+
         return response()->json([
-        'message' => 'User deleted successfully.',
+            'message' => 'User deleted successfully.',
         ], 200);
     }
 }

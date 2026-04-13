@@ -6,9 +6,6 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->seed(\Database\Seeders\PassportSeeder::class);
-    }
+    // PassportSeeder is called individually in tests that need it
+    // to avoid running it for tests that don't need database access
 }

@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Http\Resources\IncidenceResource;
 use App\Models\Incidence;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Laravel\Passport\Passport;
 use Tests\TestCase;
 
@@ -167,9 +169,9 @@ class IncidenceTest extends TestCase
     public function test_incidence_resource_structure(): void
     {
         $incidence = Incidence::factory()->create();
-        $resource = new \App\Http\Resources\IncidenceResource($incidence);
-        $data = $resource->toArray(new \Illuminate\Http\Request);
-    
+        $resource = new IncidenceResource($incidence);
+        $data = $resource->toArray(new Request);
+
         $this->assertArrayHasKey('id', $data);
         $this->assertArrayHasKey('title', $data);
         $this->assertArrayHasKey('status', $data);
@@ -219,21 +221,21 @@ class IncidenceTest extends TestCase
     public function test_create_incidence_accepts_valid_assigned_user(): void
     {
         Passport::actingAs($this->user);
-        
+
         $otherUser = User::factory()->create();
-        
+
         $response = $this->postJson('/api/v1/incidences', [
             'title' => 'Test',
             'assigned_to' => $otherUser->id,
         ]);
-    
+
         $response->assertStatus(201);
-    
+
         $this->assertDatabaseHas('incidences', [
             'title' => 'Test',
             'assigned_to' => $otherUser->id,
-    ]);
-}
+        ]);
+    }
 
     public function test_update_incidence_validates_status_values(): void
     {
