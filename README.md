@@ -2,30 +2,24 @@
   <img src="docs/images/incidensly_letter.png" alt="INCIDENsly Logo" width="400">
 </p>
 
-
-
-**[➪ TRY ME RIGHT ON !](https://incidensly-webapp-production.up.railway.app/docs/)**
----
-
 Incident manager system with a complete REST API and automated tests. Built with Laravel 12 and OAuth2 authentication via Passport.
+
+---
 
 ## Table of Contents
 
 - [Features](#features)
 - [Requirements](#requirements)
 - [Local Installation](#local-installation)
-- [Docker Installation](#docker-installation)
 - [Configuration](#configuration)
 - [Running Tests](#running-tests)
 - [Static Analysis](#static-analysis-phpstan)
 - [API Usage](#api-usage)
-- [Endpoints](#endpoints)
-- [Architecture](#architecture)
 - [Data Model](#data-model)
 - [Security & Authorization](#security--authorization)
-- [Tech Stack](#tech-stack)
-- [Contributing](#contributing)
-- [License](#license)
+- [Code Style](#code-style)
+- [Known Issues & Bugs](#known-issues--bugs)
+- [Future Improvements](#future-improvements)
 
 ---
 
@@ -118,7 +112,7 @@ This command creates:
 
 ### 7. Seed the database (optional)
 
-Populate the database with sample data for testing:
+Seed the database with sample data for testing:
 
 ```bash
 php artisan db:seed
@@ -300,84 +294,6 @@ curl "http://localhost:8000/api/v1/incidences?per_page=20&page=2"
 
 ---
 
-## Endpoints
-
-### Authentication
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/api/v1/register` | Register new user | No |
-| POST | `/api/v1/login` | Login | No |
-| POST | `/api/v1/logout` | Invalidate tokens | Yes |
-| GET | `/api/v1/me` | Get current profile | Yes |
-
-### Incidences
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/v1/incidences` | List all (paginated) | No |
-| GET | `/api/v1/incidences/{id}` | View incidence detail | No |
-| POST | `/api/v1/incidences` | Create incidence | Yes |
-| PUT | `/api/v1/incidences/{id}` | Update incidence | Yes* |
-| DELETE | `/api/v1/incidences/{id}` | Delete incidence | Yes* |
-| GET | `/api/v1/my-incidences` | My incidences | Yes |
-
-*Owner or admin only
-
-### Comments
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/v1/incidences/{id}/comments` | List comments | No |
-| POST | `/api/v1/incidences/{id}/comments` | Create comment | Yes |
-| GET | `/api/v1/comments/{id}` | View comment | No |
-| PUT | `/api/v1/comments/{id}` | Update comment | Yes* |
-| DELETE | `/api/v1/comments/{id}` | Delete comment | Yes* |
-
-*Owner or admin only
-
-### Tags
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/v1/tags` | List all | No |
-| GET | `/api/v1/tags/{id}` | View tag detail | No |
-| POST | `/api/v1/tags` | Create tag | Yes |
-| PUT | `/api/v1/tags/{id}` | Update tag | Yes* |
-| DELETE | `/api/v1/tags/{id}` | Delete tag | Yes* |
-
-*Owner or admin only
-
-### Metrics
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/v1/metrics` | Aggregated statistics | Yes |
-
-### Users (Admin)
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/v1/users` | List users | Yes (Admin) |
-| GET | `/api/v1/users/{id}` | View user | Yes (Admin) |
-| GET | `/api/v1/users/{id}/incidences` | User's incidences | Yes (Admin) |
-| DELETE | `/api/v1/users/{id}` | Delete user | Yes (Admin) |
-
----`
-
-### Design Decisions
-
-| Pattern | Implementation | Benefit |
-|---------|---------------|---------|
-| **API Versioning** | Prefix `/api/v1` | Backward compatibility for future v2 |
-| **AuthorizesUser Trait** | `authorizeOwner()` and `authorizeOwnerOrAdmin()` | DRY across controllers |
-| **API Resources** | IncidenceResource, CommentResource, etc. | Consistent transformation |
-| **Form Requests** | Validation centralized per operation | Reusability and clarity |
-| **FirstOrCreate** | Tags with case-insensitive search | Atomically prevents duplicates |
-| **Soft Deletes** | Not implemented (admin can permanently delete) | Simplicity, bye !|
-
----
-
 ## Data Model
 
 ```
@@ -441,7 +357,6 @@ if ($response = $this->authorizeOwner($comment)) {
 
 ---
 
-
 ### Code Style
 
 The project uses **Laravel Pint** for automatic formatting:
@@ -449,22 +364,16 @@ The project uses **Laravel Pint** for automatic formatting:
 ```bash
 ./vendor/bin/pint
 ```
-
 ---
-
 ## Known Issues & Bugs
 
 ### Bugs to Fix
-
-- **$request undefined in CommentController and TagController**: Methods use `$request->per_page` but `$request` is not injected as a parameter. Relies on global `request()` helper which works but is confusing and should be fixed for clarity.
-
-- **Protected tests in TagTest**: Two tests are marked `protected` instead of `public`, causing PHPUnit to skip them during test execution (`test_anyone_can_view_tags` and `test_authenticated_user_can_create_tag`).
 
 - **IncidencePolicy not used**: A policy exists at `app/Policies/IncidencePolicy.php` but controllers use the `AuthorizesUser` trait instead. The policy is never registered or used, creating unnecessary duplication.
 
 - **N+1 query in syncTags()**: When creating/updating incidences with multiple tags, the `syncTags()` method in `IncidenceController` performs one query per tag (up to 10). Should be optimized to batch queries.
 
-- **Missing database indexes**: The `incidences` table has no indexes on frequently filtered columns (`status`, `priority`, `created_at`). This will cause performance issues at scale.
+- **Missing database indexes**: The `incidences` table has no indexes on frequently filtered columns (`status`, `priority`, `created_at`). This will cause performance issues at big scale.
 
 ### Configuration Issues (Fixed)
 
@@ -476,30 +385,18 @@ The project uses **Laravel Pint** for automatic formatting:
 
 ## Future Improvements
 
-### High Priority
-
-- [ ] Fix `$request` variable injection in CommentController and TagController
-- [ ] Change protected tests to public in TagTest
-- [ ] Register and use IncidencePolicy or remove it to avoid duplication
-- [ ] Add database indexes on `incidences.status`, `incidences.priority`, `incidences.created_at`
-- [ ] Optimize `syncTags()` to batch tag lookups
-
-### Medium Priority
-
+- [ ] Add database indexes on `incidences.status`, `incidences.priority`, `incidences.created_at` (this would be very significant for performance if the dataset grows fat)
+- [ ] Optimize `syncTags()` to batch tag lookups instead of one query per tag
 - [ ] Implement soft deletes for incidences and comments (data recovery)
 - [ ] Add comprehensive caching layer for metrics endpoint
 - [ ] Add rate limiting to API endpoints (`throttle` middleware)
-- [ ] Implement API versioning strategy for v2 (content negotiation or URL prefix)
-- [ ] Add role-based access control (RBAC) with multiple roles instead of boolean `is_admin`
+- [ ] Add role-based access control with multiple roles instead of boolean `is_admin` -> This is a big change but it would be nice to have more granular roles and permissions in the future (RBAC)
 
-### Nice to Have
+### It would be nice to have:
 
 - [ ] Add email/Slack notifications on incidence status changes
 - [ ] Add image/file attachments for incidences
-- [ ] Implement WebSocket for real-time updates (Laravel Echo + Pusher)
-- [ ] Add API scopes for granular token permissions
-- [ ] Implement Horizon for queue management
-- [ ] Add audit log for incidence changes
+- [ ] Audit log for incidence changes
 - [ ] Implement draft/archived incidence states
 
 ---
