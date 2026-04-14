@@ -55,84 +55,60 @@ Incident manager system with a complete REST API and automated tests. Built with
 
 ## Local Installation
 
-### 1. Clone the repository
-
-```bash
+### 1. Clone the repo
+```
 git clone https://github.com/malmental/S5_API_REST.git
 cd S5_API_REST
 ```
 
-### 2. Install PHP dependencies
-
-```bash
-composer install
+### 2. Create the SQLite database file (must be done before any migration)
+```
+touch database/database.sqlite
 ```
 
-### 3. Configure environment
-
-```bash
+### 3. Copy and configure `.env`
+```
 cp .env.example .env
 ```
 
-Edit `.env` for your environment. Default configured for SQLite:
-
-```env
-DB_CONNECTION=sqlite
-DB_DATABASE=database/database.sqlite
+### 4. Install PHP dependencies
+```
+composer install
 ```
 
-> **Note:** If using SQLite, you must create the database file before running migrations:
-> ```bash
-> touch database/database.sqlite
-> ```
-
-### 4. Generate application keys
-
-```bash
+### 5. Generate app key
+```
 php artisan key:generate
 ```
 
-### 5. Run database migrations
-
-```bash
+### 6. Run migrations 
+(this creates all tables, including the custom OAuth tables — not Passport's default ones)
+```
 php artisan migrate:fresh
 ```
 
-> **Note:** `migrate:fresh` drops all tables and recreates them. Use `php artisan migrate` if you have existing data you want to preserve.
-
-### 6. Generate Passport keys
-
-```bash
-php artisan passport: keys --force
+### 7. Generate Passport encryption keys 
+(creates oauth-public.key and oauth-private.key in storage/)
+```
+php artisan passport:keys --force
 ```
 
-This command creates:
-- OAuth Clients for Password Grant and Personal Access
-- RSA encryption keys
-
-### 7. Seed the database (optional)
-
-Seed the database with sample data for testing:
-
-```bash
+### 8. Generate Passport OAuth clients 
+(creates the password grant and personal access clients in the oauth_clients table)
+```
+php artisan passport:client --password
+```
+### 9. Seed the database
+```
 php artisan db:seed
 ```
 
-This creates:
-- 1 Admin user: `admin@telsur.cl` / `password`
-- 1 Regular user: `noadmin@telsur.cl` / `password`
-- Sample incidences, comments, and tags for testing API endpoints.
-
-### 8. Install JavaScript dependencies
-
-```bash
-npm install
-npm run build
+### 10. Build assets (optional)
 ```
-
-### 9. Start the server
-
-```bash
+npm install && npm run build
+```
+### 11. Start the server
+```
 php artisan serve
 ```
 
@@ -172,31 +148,13 @@ php artisan test --filter=TagTest
 
 ### Run a specific test
 
-I don't recommend to do this, but you can run a specific test method by reading the name on the file and running command. 
+You can run an specific test method by reading the name on the file and running command. 
 
 Here's a little help:
 
 ```bash
 php artisan test --filter=test_authenticated_user_can_create_incidence
 ```
-
----
-
-## Static Analysis (PHPStan)
-
-This is undoubtly a great tool but it's propense to produce false positives in certain contexts, which for us, it can be confusing. 
-
-If you want to run it, you can do it with the following command:
-
-```bash
-# Full analysis
-./vendor/bin/phpstan analyse
-
-# With more memory
-./vendor/bin/phpstan analyse --memory-limit=512M
-```
-
-The project is configured at **level 5** (out of 9). You can adjust this in `phpstan.neon` if you want to be more strict or more easy on it.
 
 ---
 
@@ -305,9 +263,9 @@ curl "http://localhost:8000/api/v1/incidences?per_page=20&page=2"
 ┌─────────────┐         ┌──────────────┐         ┌─────────────┐
 │    User     │         │  Incidence   │         │     Tag     │
 ├─────────────┤         ├──────────────┤         ├─────────────┤
-│ id          │──┐      │ id           │      ┌──│ id          │
+│ id          │◄─┐      │ id           │      ┌──│ id          │
 │ name        │  │      │ title        │      │  │ name        │
-│ email       │  └──◄───│ user_id (FK) │      │  │ user_id(FK) │
+│ email       │  └──────│ user_id (FK) │      │  │ user_id(FK) │
 │ is_admin    │         │ assigned_to  │◄─────┘  └─────────────┘
 │ password    │         │ status       │                │
 └─────────────┘         │ priority     │               N:M
@@ -341,7 +299,7 @@ curl "http://localhost:8000/api/v1/incidences?per_page=20&page=2"
 
 ## Security & Authorization
 
-### Middleware Applied
+### Middleware
 
 - `auth:api` — Requires valid Passport token
 - `is_admin` — Verifies `user.is_admin = true`
@@ -362,14 +320,6 @@ if ($response = $this->authorizeOwner($comment)) {
 
 ---
 
-### Code Style
-
-The project uses **Laravel Pint** for automatic formatting:
-
-```bash
-./vendor/bin/pint
-```
----
 ## Known Issues & Bugs
 
 ### Bugs to Fix
