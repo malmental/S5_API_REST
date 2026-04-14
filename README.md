@@ -208,6 +208,10 @@ The project is configured at **level 5** (out of 9). You can adjust this in `php
   </a>
 </h3>
 
+<p align="center">
+  <img src="docs/images/incidensly_api_docs.png" alt="INCIDENsly Logo" width="400">
+</p>
+
 Or ... you can complete your request in your local environment with the following information:
 
 ### Interactive Documentation
@@ -217,9 +221,6 @@ Access the complete API documentation at:
 ```
 http://localhost:8000/docs
 ```
-<p align="center">
-  <img src="docs/images/incidensly_api_docs.png" alt="INCIDENsly Logo" width="400">
-</p>
 
 Includes:
 - Complete endpoint reference
