@@ -121,7 +121,7 @@ php artisan db:seed
 This creates:
 - 1 Admin user: `admin@telsur.cl` / `password`
 - 1 Regular user: `noadmin@telsur.cl` / `password`
-- Sample incidences, comments, and tags
+- Sample incidences, comments, and tags for testing API endpoints.
 
 ### 8. Install JavaScript dependencies
 
@@ -212,7 +212,14 @@ The project is configured at **level 5** (out of 9). You can adjust this in `php
   <img src="docs/images/incidensly_api_docs.png" alt="INCIDENsly Logo" width="400">
 </p>
 
-Or ... you can complete your request in your local environment with the following information:
+Or ... you can complete your request in your local environment remembering the following initial credentials:
+````
+Admin user: admin@telsur.cl
+Password: password
+
+Regular user: noadmin@telsur.cl
+Password: password
+````
 
 ### Interactive Documentation
 
@@ -228,17 +235,6 @@ Includes:
 - Request/response examples
 
 As you had run the seeder, you have a full database with sample data to test the endpoints. 
-
-You will be provided with two users to test authentication and authorization:
-````
-Admin user: admin@telsur.cl
-Password: password
-
-Regular user: noadmin@telsur.cl
-Password: password
-````
-
-
 
 ### Postman Collection
 
