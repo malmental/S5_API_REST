@@ -8,6 +8,7 @@ use App\Http\Requests\StoreTagRequest;
 use App\Http\Requests\UpdateTagRequest;
 use App\Http\Resources\TagResource;
 use App\Models\Tag;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -38,10 +39,11 @@ class TagController extends Controller
      *   ]
      * }
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $perPage = min($request->per_page ?? 15, 100);
-        $tags = Tag::with(['user', 'incidences'])->paginate($perPage);
+
+        $tags = Tag::paginate($perPage);
 
         return response()->json([
             'data' => TagResource::collection($tags),

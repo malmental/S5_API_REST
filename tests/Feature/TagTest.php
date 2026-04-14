@@ -27,13 +27,13 @@ class TagTest extends TestCase
         $this->tag = Tag::factory()->create(['user_id' => $this->user->id]);
     }
 
-    protected function test_anyone_can_view_tags(): void
+    public function test_anyone_can_view_tags(): void
     {
         $response = $this->getJson('/api/v1/tags');
         $response->assertStatus(200);
     }
 
-    protected function test_authenticated_user_can_create_tag(): void
+    public function test_authenticated_user_can_create_tag(): void
     {
         Passport::actingAs($this->user);
 
