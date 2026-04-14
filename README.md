@@ -103,7 +103,7 @@ php artisan migrate:fresh
 ### 6. Generate Passport keys
 
 ```bash
-php artisan passport:install
+php artisan passport: keys --force
 ```
 
 This command creates:
