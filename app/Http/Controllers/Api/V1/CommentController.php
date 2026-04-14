@@ -8,6 +8,7 @@ use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -58,9 +59,10 @@ class CommentController extends Controller
      *   "message": "No query results for model [App\\Models\\Incidence]"
      * }
      */
-    public function index(string $incidenceId): JsonResponse
+    public function index(Request $request, string $incidenceId): JsonResponse
     {
         $perPage = min($request->per_page ?? 15, 100);
+
         $comments = Comment::with(['user', 'children.user'])
             ->where('incidence_id', $incidenceId)
             ->whereNull('parent_id')
@@ -179,7 +181,8 @@ class CommentController extends Controller
         $comment->load(['user', 'children.user', 'parent.user']);
 
         return response()->json([
-            'data' => new CommentResource($comment)]);
+            'data' => new CommentResource($comment)
+        ]);
     }
 
     /**
