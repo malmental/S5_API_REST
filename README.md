@@ -202,6 +202,14 @@ The project is configured at **level 5** (out of 9). You can adjust this in `php
 
 ## API Usage
 
+<h3>
+  <a href="https://incidensly-webapp-production.up.railway.app/docs/" target="_blank">
+    ➪ You can try me right on !
+  </a>
+</h3>
+
+Or ... you can complete your request in your local environment with the following information:
+
 ### Interactive Documentation
 
 Access the complete API documentation at:
